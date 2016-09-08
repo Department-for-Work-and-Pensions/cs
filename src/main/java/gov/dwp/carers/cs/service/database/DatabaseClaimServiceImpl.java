@@ -184,7 +184,7 @@ public class DatabaseClaimServiceImpl implements DatabaseClaimService {
     public String fullClaim(final String transactionId, final String originTag) {
         final String sql = "SELECT claimXml FROM carers.claim WHERE transId = ? AND origintag = ?";
         final String xml = jdbcTemplate.query(sql, resultSet -> resultSet.next() ? resultSet.getString(1) : null, transactionId, originTag);
-        if (xml != null || !xml.isEmpty()) {
+        if (xml != null && !xml.isEmpty()) {
             updateClaim(transactionId, "viewed");
         }
         return xml;
