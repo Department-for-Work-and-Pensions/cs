@@ -1,0 +1,164 @@
+buildscript {
+    ext {
+        springBootVersion = '1.4.0.RELEASE'
+    }
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven {
+            url "${artifactory_url}repo"
+            credentials {
+                username = "${artifactory_user}"
+                password = "${artifactory_password}"
+            }
+        }
+    }
+    dependencies {
+        classpath(group: 'org.jfrog.buildinfo', name: 'build-info-extractor-gradle', version: '4.0.0')
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+allprojects {
+    apply plugin: 'com.jfrog.artifactory'
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'maven-publish'
+    apply plugin: 'spring-boot'
+    version = '3.00-SNAPSHOT'
+    archivesBaseName = 'cs'
+    group = 'gov.dwp.carers'
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+}
+
+String repo = version.endsWith('SNAPSHOT') ? 'libs-snapshot-local' : 'libs-release-local'
+
+artifactory {
+    contextUrl = "${artifactory_url}"   //The base Artifactory URL if not overridden by the publisher/resolver
+    publish {
+        mavenLocal()
+        repository {
+            repoKey = repo
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+            maven = true
+
+        }
+        defaults {
+            // Reference to Gradle publications defined in the build script.
+            // This is how we tell the Artifactory Plugin which artifacts should be
+            // published to Artifactory.
+            publications('mavenJava', 'distribution')
+            publishArtifacts = true
+            publishPom = true // Publish generated POM files to Artifactory (true by default)
+        }
+    }
+    resolve {
+        repository {
+            repoKey = 'repo'
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+            maven = true
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+configurations {
+    compile.exclude module: "spring-boot-starter-tomcat"
+    compile.exclude module: "tomcat-jdbc"
+    testCompile.exclude group: 'org.slf4j', module: 'log4j-over-slf4j'
+    testCompile.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+}
+
+configurations.all {
+    // check for updates every build
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
+dependencies {
+    compile("gov.dwp.carers:xmlcommons:8.19-SNAPSHOT")
+    compile("gov.dwp.carers:carerscommon:8.04-SNAPSHOT")
+    compile("com.zaxxer:HikariCP")
+    compile("org.springframework.boot:spring-boot-starter-jetty")
+    compile("org.springframework.boot:spring-boot-starter-data-rest")
+    compile("org.springframework.boot:spring-boot-starter-jdbc")
+    compile("org.springframework.boot:spring-boot-starter-amqp")
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.springframework.boot:spring-boot-starter-websocket")
+    compile("org.springframework.boot:spring-boot-devtools")
+    compile("org.springframework.boot:spring-boot-starter-actuator")
+    compile("org.postgresql:postgresql")
+    runtime("me.moocar:logback-gelf:0.3")
+    testCompile (
+            'org.springframework.boot:spring-boot-starter-test',
+            'org.assertj:assertj-core:3.2.0'
+    )
+    testCompile("gov.dwp.carers:testcommons:1.00-SNAPSHOT")
+}
+
+//Use this for publishing to local Maven repo
+//gradle publishToMavenLocal
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact (sourcesJar) {
+                classifier = 'sources'
+            }
+
+        }
+        distribution(MavenPublication) {
+            artifact ("${libsDir}/${archivesBaseName}-${version}-full.jar") {
+                classifier = 'full'
+            }
+        }
+    }
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task createInfoFile << {
+    def props = new Properties()
+    props.setProperty("application.version", version)
+    props.setProperty("application.name", rootProject.name)
+    def writer = new FileWriter(file('./src/main/resources/config/application-info.properties'))
+    try {
+        props.store(writer, "application-info.properties Created for build version:" + version)
+        writer.flush()
+    } finally {
+        writer.close()
+    }
+}
+
+compileJava.dependsOn(createInfoFile)
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.13'
+}
+
+test {
+    testLogging.showStandardStreams = true
+}
+
+bootRun {
+    addResources = true
+}
+
+def renameFile(oldName, newName) {
+    new File(oldName).renameTo(new File(newName))
+}
+
+bootRepackage.doLast {
+    renameFile("${libsDir}/${archivesBaseName}-${version}.jar", "${libsDir}/${archivesBaseName}-${version}-full.jar");
+    renameFile("${libsDir}/${archivesBaseName}-${version}.jar.original", "${libsDir}/${archivesBaseName}-${version}.jar");
+}
+
