@@ -21,11 +21,11 @@ public class DatabasePurgeServiceImpl implements Procedure {
 
     private final JdbcTemplate jdbcTemplate;
     private final Integer databasePurgePeriod;
-    private static final String PURGE_SQL = "DELETE FROM carers.claim WHERE transid IN (SELECT transid FROM carers.claimsummary WHERE key = 'status' and value = 'completed' INTERSECT SELECT transid FROM carers.claimsummary WHERE key = 'claimDateTime' AND (current_date - to_date(value,'DDMMYYYYHH24MI')) > 7)";
+    private static final String PURGE_SQL = "DELETE FROM carers.claim WHERE transid IN (SELECT transid FROM carers.claimsummary WHERE key = 'status' and value = 'completed' INTERSECT SELECT transid FROM carers.claimsummary WHERE key = 'claimDateTime' AND to_date(value,'DDMMYYYYHH24MI') < ?)";
 
     @Override
     public void invoke() {
-        final Object[] args = new Object[] { 4, getCreatedOnTimestamp(databasePurgePeriod) };
+        final Object[] args = new Object[] { getCreatedOnTimestamp(databasePurgePeriod) };
         final int stored = jdbcTemplate.update(PURGE_SQL, args);
         if (stored <= 0) {
             LOGGER.debug("No old records > " + databasePurgePeriod + " available to be removed from suspiciousmessages table.");

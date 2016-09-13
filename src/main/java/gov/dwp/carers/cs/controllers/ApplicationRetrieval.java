@@ -1,7 +1,6 @@
 package gov.dwp.carers.cs.controllers;
 
 import gov.dwp.carers.cs.model.ClaimSummary;
-import gov.dwp.carers.cs.model.ClaimSummaryCount;
 import gov.dwp.carers.cs.model.TabCount;
 import gov.dwp.carers.cs.service.claim.ClaimRetrievalService;
 import gov.dwp.carers.monitor.Counters;
