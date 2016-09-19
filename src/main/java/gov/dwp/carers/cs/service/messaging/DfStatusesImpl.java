@@ -14,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,25 +45,32 @@ public class DfStatusesImpl implements DfStatuses {
     }
 
     private List<ClaimStatus> getStatuses(final List<ClaimSummary> claimSummaries) {
-        final List<String> transactionIds = claimSummaries.stream().map(claimSummary -> claimSummary.getTransactionId()).collect(Collectors.toList());
-        final HttpHeaders headers = new HttpHeaders();
-        final MediaType mediaType = new MediaType("application", "json", StandardCharsets.UTF_8);
-        headers.setContentType(mediaType);
-        final HttpEntity<List<String>> request = new HttpEntity<>(transactionIds, headers);
-        try {
-            ResponseEntity<List<ClaimStatus>> responseEntity = restTemplate.exchange(dfUrl + "/statuses", HttpMethod.POST, request, new ParameterizedTypeReference<List<ClaimStatus>>() {});
-            processResponse(responseEntity);
-            return responseEntity.getBody();
-        } catch (RestClientException rce) {
-            LOGGER.error("DF is unavailable! " + rce.getMessage() + ".", rce);
-            throw new MessageDistributionException("DF is unavailable! " + rce.getMessage() + ".", rce);
-        } catch (MessageDistributionException mde) {
-            LOGGER.error("Status retrieval from DF failed. " + mde.getMessage() + ".", mde);
-            throw mde;
-        } catch (Exception e) {
-            LOGGER.error("Status retrieval from DF failed.", e);
-            throw new MessageDistributionException("Status retrieval from DF failed! " + e.getMessage() + ".", e);
+        List<ClaimStatus> rtnClaimStatuses;
+        if (!claimSummaries.isEmpty()) {
+            final List<String> transactionIds = claimSummaries.stream().map(claimSummary -> claimSummary.getTransactionId()).collect(Collectors.toList());
+            final HttpHeaders headers = new HttpHeaders();
+            final MediaType mediaType = new MediaType("application", "json", StandardCharsets.UTF_8);
+            headers.setContentType(mediaType);
+            final HttpEntity<List<String>> request = new HttpEntity<>(transactionIds, headers);
+            try {
+                ResponseEntity<List<ClaimStatus>> responseEntity = restTemplate.exchange(dfUrl + "/statuses", HttpMethod.POST, request, new ParameterizedTypeReference<List<ClaimStatus>>() {
+                });
+                processResponse(responseEntity);
+                rtnClaimStatuses = responseEntity.getBody();
+            } catch (RestClientException rce) {
+                LOGGER.error("DF is unavailable! " + rce.getMessage() + ".", rce);
+                throw new MessageDistributionException("DF is unavailable! " + rce.getMessage() + ".", rce);
+            } catch (MessageDistributionException mde) {
+                LOGGER.error("Status retrieval from DF failed. " + mde.getMessage() + ".", mde);
+                throw mde;
+            } catch (Exception e) {
+                LOGGER.error("Status retrieval from DF failed.", e);
+                throw new MessageDistributionException("Status retrieval from DF failed! " + e.getMessage() + ".", e);
+            }
+        } else {
+            rtnClaimStatuses = new ArrayList<>();
         }
+        return rtnClaimStatuses;
     }
 
     private Boolean processResponse(final ResponseEntity<List<ClaimStatus>> response) {
@@ -70,7 +78,7 @@ public class DfStatusesImpl implements DfStatuses {
         switch (responseStatus) {
             case org.apache.http.HttpStatus.SC_OK:
                 if (LOGGER.isInfoEnabled()) {
-                    LOGGER.info("Successfully retrieve transaction statues.");
+                    LOGGER.info("Successfully retrieved transaction statues.");
                 }
                 break;
             case org.apache.http.HttpStatus.SC_REQUEST_TIMEOUT:

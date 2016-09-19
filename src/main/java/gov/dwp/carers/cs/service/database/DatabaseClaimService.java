@@ -20,6 +20,6 @@ public interface DatabaseClaimService {
     List<List<String>> export(final String originTag);
     Boolean purge(final String originTag);
     Map<String, TabCount> constructClaimSummaryWithTabTotals(final String originTag, final String dateString);
-    void updateStatus(final String transactionId, final Integer status) throws SQLException;
+    Boolean updateStatus(final String transactionId, final Integer status) throws SQLException;
     Boolean health() throws SQLException;
 }

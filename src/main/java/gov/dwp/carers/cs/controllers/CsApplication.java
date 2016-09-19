@@ -27,8 +27,8 @@ import java.util.concurrent.TimeUnit;
 @SpringBootApplication(exclude = JmsAutoConfiguration.class)
 @ComponentScan(basePackages = {"gov.dwp.carers"})
 @PropertySource("classpath:/config/application-info.properties")
-public class CsFacadeApplication {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CsFacadeApplication.class);
+public class CsApplication {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CsApplication.class);
 
     @Value("${server.port}")
     private String serverPort;
@@ -96,7 +96,7 @@ public class CsFacadeApplication {
     }
 
     public static void main(final String... args) throws Exception {
-        final SpringApplication springApplication = new SpringApplication(CsFacadeApplication.class);
+        final SpringApplication springApplication = new SpringApplication(CsApplication.class);
         springApplication.addListeners(new ApplicationPidFileWriter());
         springApplication.run(args);
     }

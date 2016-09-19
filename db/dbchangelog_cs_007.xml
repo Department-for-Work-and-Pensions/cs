@@ -10,8 +10,8 @@
         <comment>Create claim_status_history table</comment>
         <createTable schemaName="carers" tableName="claim_status_history">
             <column name="transid" type="varchar(11)"/>
-            <column name="old_status" type="int"/>
-            <column name="new_status" type="int"/>
+            <column name="old_status" type="varchar(200)"/>
+            <column name="new_status" type="varchar(200)"/>
             <column name="timestamp" type="timestamp"/>
         </createTable>
         <addNotNullConstraint schemaName="carers" tableName="claim_status_history" columnName="transid"/>
@@ -49,8 +49,12 @@
             CREATE TRIGGER update_history AFTER insert or update or delete on carers.claimsummary
             FOR EACH ROW EXECUTE PROCEDURE update_claim_status_history();
         </createProcedure>
+        <sql>
+            CREATE EXTENSION tablefunc;
+        </sql>
         <rollback>
             DROP TRIGGER if exists update_history on carers.claimsummary;
+            DROP EXTENSION tablefunc;
         </rollback>
     </changeSet>
 </databaseChangeLog>

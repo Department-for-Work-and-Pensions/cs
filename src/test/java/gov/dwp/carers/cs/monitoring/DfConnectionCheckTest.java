@@ -35,7 +35,6 @@ public class DfConnectionCheckTest {
     @Before
     public void setUp() throws Exception {
         dfConnectionCheck = new DfConnectionCheck("cs", "3.00", environment, restTemplate);
-
     }
 
     @Test

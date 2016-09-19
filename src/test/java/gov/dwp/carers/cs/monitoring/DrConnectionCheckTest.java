@@ -35,7 +35,6 @@ public class DrConnectionCheckTest {
     @Before
     public void setUp() throws Exception {
         drConnectionCheck = new DrConnectionCheck("cs", "3.00", environment, restTemplate);
-
     }
 
     @Test

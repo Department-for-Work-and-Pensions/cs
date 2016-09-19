@@ -60,6 +60,7 @@ public class ClaimUpdateServiceImpl implements ClaimUpdateService {
         LOGGER.debug("submitClaim called.");
         final String originTag = xmlExtractor.extractSingleElement(xml, "Origin");
         final String transactionId = xmlExtractor.extractTransactionId(xml);
+        String rtn = "Success";
         Boolean result = databaseClaimService.submitMessage(xml, force, originTag, transactionId);
 
         if (LOGGER.isDebugEnabled()) {
@@ -67,9 +68,12 @@ public class ClaimUpdateServiceImpl implements ClaimUpdateService {
         }
         // submit to drs only if it is enabled
         if (result && dfEnabled && "GB".equals(originTag)) {
-            drSubmitter.drSubmit(xml, transactionId);
+            result = drSubmitter.drSubmit(xml, transactionId);
         }
-        return "";
+        if (!result) {
+            rtn = "Failure";
+        }
+        return rtn;
     }
 
     @Inject

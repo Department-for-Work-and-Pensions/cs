@@ -78,8 +78,7 @@ public class DrSubmitterImpl implements DrSubmitter {
             case org.apache.http.HttpStatus.SC_BAD_REQUEST:
                 LOGGER.error("DR Received response - BAD_REQUEST: " + responseStatus + ": "+ response.toString() + ". transactionId [" + transactionId + "]. This should not happen. Probably a discrepancy between ingress database and claim database (transactionIds). Claim stored in suspicious table.");
                 counters.incrementMetric(errorMetric + responseStatus);
-                updateStatus(transactionId, ClaimServiceStatus.FAILED_TO_SEND.getStatus());
-                break;
+                throw new MessageDistributionException("DR Received returned bad request.");
             default:
                 LOGGER.error("DR Received response: " + responseStatus + " : " + response.toString() +". transactionId [" + transactionId + "].");
                 counters.incrementMetric(errorMetric + responseStatus);

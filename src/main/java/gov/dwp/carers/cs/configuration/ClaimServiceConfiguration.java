@@ -26,6 +26,7 @@ public class ClaimServiceConfiguration {
         final HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
         factory.setReadTimeout(readTimeout);
         factory.setConnectTimeout(connectionTimeout);
+        factory.setBufferRequestBody(false);
         return factory;
     }
 }

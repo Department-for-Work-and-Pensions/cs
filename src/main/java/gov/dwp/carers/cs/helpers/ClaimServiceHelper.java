@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 
 import javax.xml.bind.DatatypeConverter;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -61,7 +61,7 @@ public class ClaimServiceHelper {
     public String getTimeGenerated(final Document doc, final Boolean forceToday) {
         String dateTimeGenerated;
         if (forceToday) {
-            dateTimeGenerated = DateTimeFormatter.ofPattern("ddMMyyyyHHmm").format(Instant.now());
+            dateTimeGenerated = DateTimeFormatter.ofPattern("ddMMyyyyHHmm").format(LocalDateTime.now());
         } else {
             dateTimeGenerated = xmlExtractor.getTextFromXmlNode(doc, "DWPCATransaction", Arrays.asList("DWPCATransaction","DateTimeGenerated"));
             dateTimeGenerated = dateTimeGenerated.replaceAll("-", "").replaceAll(" ", "").replaceAll(":", "");

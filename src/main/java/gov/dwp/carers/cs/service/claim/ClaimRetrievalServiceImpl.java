@@ -3,6 +3,7 @@ package gov.dwp.carers.cs.service.claim;
 import gov.dwp.carers.cs.model.ClaimSummary;
 import gov.dwp.carers.cs.model.TabCount;
 import gov.dwp.carers.cs.service.database.DatabaseClaimService;
+import gov.dwp.carers.cs.service.messaging.DfStatuses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -20,13 +21,14 @@ public class ClaimRetrievalServiceImpl implements ClaimRetrievalService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClaimRetrievalServiceImpl.class);
 
     private final DatabaseClaimService databaseClaimService;
+    private final DfStatuses dfStatuses;
 
     @Override
     public List<ClaimSummary> claimsForDate(final String currentDate, final String originTag) {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("claimsForDate called with currentDate:" + currentDate + ", originTag:" + originTag);
         }
-        return databaseClaimService.claims(currentDate, originTag);
+        return dfStatuses.getDfStatuses(databaseClaimService.claims(originTag, currentDate));
     }
 
     @Override
@@ -42,7 +44,7 @@ public class ClaimRetrievalServiceImpl implements ClaimRetrievalService {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("claimsForDate called with currentDate:" + currentDate + ", originTag:" + originTag);
         }
-        return databaseClaimService.circs(originTag, currentDate);
+        return dfStatuses.getDfStatuses(databaseClaimService.circs(originTag, currentDate));
     }
 
     @Override
@@ -50,7 +52,7 @@ public class ClaimRetrievalServiceImpl implements ClaimRetrievalService {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("claimsForDateFiltered called with currentDate:" + currentDate + ", status:" + status + ", originTag:" + originTag);
         }
-        return databaseClaimService.claimsFiltered(originTag, currentDate, status);
+        return dfStatuses.getDfStatuses(databaseClaimService.claimsFiltered(originTag, currentDate, status));
     }
 
     @Override
@@ -58,7 +60,7 @@ public class ClaimRetrievalServiceImpl implements ClaimRetrievalService {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("claimsForDateFilteredBySurname called with currentDate:" + currentDate + ", sortBy:" + sortBy + ", originTag:" + originTag);
         }
-        return databaseClaimService.claimsFilteredBySurname(originTag, currentDate, sortBy);
+        return dfStatuses.getDfStatuses(databaseClaimService.claimsFilteredBySurname(originTag, currentDate, sortBy));
     }
 
     @Override
@@ -94,7 +96,8 @@ public class ClaimRetrievalServiceImpl implements ClaimRetrievalService {
     }
 
     @Inject
-    public ClaimRetrievalServiceImpl(DatabaseClaimService databaseClaimService) {
+    public ClaimRetrievalServiceImpl(DatabaseClaimService databaseClaimService, DfStatuses dfStatuses) {
         this.databaseClaimService = databaseClaimService;
+        this.dfStatuses = dfStatuses;
     }
 }

@@ -97,9 +97,9 @@ dependencies {
     runtime("me.moocar:logback-gelf:0.3")
     testCompile (
             'org.springframework.boot:spring-boot-starter-test',
-            'org.assertj:assertj-core:3.2.0'
+            'org.assertj:assertj-core:3.5.2'
     )
-    testCompile("gov.dwp.carers:testcommons:1.00-SNAPSHOT")
+    testCompile("gov.dwp.carers:testcommons:1.01-SNAPSHOT")
 }
 
 //Use this for publishing to local Maven repo

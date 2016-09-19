@@ -27,7 +27,6 @@ public class DatabaseClaimServiceImpl implements DatabaseClaimService {
     private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseClaimServiceImpl.class);
 
     private final JdbcTemplate jdbcTemplate;
-    private final DfStatuses dfStatuses;
     private final TransactionTemplate transactionTemplate;
     private final ClaimServiceHelper claimServiceHelper;
     private final Counters counters;
@@ -36,14 +35,12 @@ public class DatabaseClaimServiceImpl implements DatabaseClaimService {
 
     @Inject
     public DatabaseClaimServiceImpl(final JdbcTemplate jdbcTemplate,
-                                    final DfStatuses dfStatuses,
                                     final PlatformTransactionManager transactionManager,
                                     final ClaimServiceHelper claimServiceHelper,
                                     final Counters counters,
                                     @Value("${cs.db.claim.count}") final String claimMetric,
                                     @Value("${cs.db.claim.summary.count}") final String claimSummaryMetric) {
         this.jdbcTemplate = jdbcTemplate;
-        this.dfStatuses = dfStatuses;
         this.transactionTemplate = new TransactionTemplate(transactionManager);
         this.claimServiceHelper = claimServiceHelper;
         this.counters = counters;
@@ -81,7 +78,7 @@ public class DatabaseClaimServiceImpl implements DatabaseClaimService {
                 "nino varchar, sortby varchar, status varchar, surname varchar " +
                 ")";
         final List<ClaimSummary> claimSummaries = jdbcTemplate.query(sql, new ClaimSummaryRowMapper());
-        return dfStatuses.getDfStatuses(claimSummaries);
+        return claimSummaries;
     }
 
     @Override
@@ -114,7 +111,7 @@ public class DatabaseClaimServiceImpl implements DatabaseClaimService {
                 "nino varchar, sortby varchar, status varchar, surname varchar " +
                 ")";
         final List<ClaimSummary> claimSummaries = jdbcTemplate.query(sql, new ClaimSummaryRowMapper());
-        return dfStatuses.getDfStatuses(claimSummaries);
+        return claimSummaries;
     }
 
     @Override
@@ -149,7 +146,7 @@ public class DatabaseClaimServiceImpl implements DatabaseClaimService {
                 "nino varchar, sortby varchar, status varchar, surname varchar " +
                 ")";
         final List<ClaimSummary> claimSummaries = jdbcTemplate.query(sql, new ClaimSummaryRowMapper());
-        return dfStatuses.getDfStatuses(claimSummaries);
+        return claimSummaries;
     }
 
     @Override
@@ -177,7 +174,7 @@ public class DatabaseClaimServiceImpl implements DatabaseClaimService {
                 "nino varchar, sortby varchar, status varchar, surname varchar " +
                 ")";
         final List<ClaimSummary> claimSummaries = jdbcTemplate.query(sql, new ClaimSummaryRowMapper());
-        return dfStatuses.getDfStatuses(claimSummaries);
+        return claimSummaries;
     }
 
     @Override
@@ -369,15 +366,18 @@ public class DatabaseClaimServiceImpl implements DatabaseClaimService {
     }
 
     @Override
-    public void updateStatus(final String transactionId, final Integer status) throws SQLException {
+    public Boolean updateStatus(final String transactionId, final Integer status) throws SQLException {
         final String sqlUpdate = "UPDATE carers.claim set drs_status=? WHERE transId=?";
         final Object[] args = new Object[] { status, transactionId };
         final int stored = jdbcTemplate.update(sqlUpdate, args);
+        Boolean rtn = Boolean.TRUE;
         if (stored <= 0) {
             LOGGER.error("Could not update status: " + status + " for transactionId " + transactionId + ".");
+            rtn = Boolean.FALSE;
         } else if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Successfully updated status: " + status + " for transactionId=" + transactionId + ".");
         }
+        return rtn;
     }
 
     private Boolean insertClaim(final String transactionId, final String xml, final String originTag) {
