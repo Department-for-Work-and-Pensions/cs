@@ -96,7 +96,7 @@ public class ClaimRetrievalServiceImpl implements ClaimRetrievalService {
     }
 
     @Inject
-    public ClaimRetrievalServiceImpl(DatabaseClaimService databaseClaimService, DfStatuses dfStatuses) {
+    public ClaimRetrievalServiceImpl(final DatabaseClaimService databaseClaimService, final DfStatuses dfStatuses) {
         this.databaseClaimService = databaseClaimService;
         this.dfStatuses = dfStatuses;
     }

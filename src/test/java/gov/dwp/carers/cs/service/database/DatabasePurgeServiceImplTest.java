@@ -26,8 +26,8 @@ public class DatabasePurgeServiceImplTest {
     private JdbcTemplate jdbcTemplate;
     private DatabasePurgeServiceImpl databasePurgeServiceImpl;
     private DateTimeFormatter dateTimeFormatter;
-    private final String transactionId = "1610000234";
-    private final String originTag = "GB";
+    private static final String TRANSACTION_ID = "1610000234";
+    private static final String ORIGIN_TAG = "GB";
 
     @Before
     public void setUp() throws Exception {
@@ -44,24 +44,24 @@ public class DatabasePurgeServiceImplTest {
 
     @Test
     public void testInvoke() throws Exception {
-        String time = getCreatedOn(10);
-        TestUtils.insertClaim(transactionId, "<test>testing</test>", 1, originTag, jdbcTemplate);
-        TestUtils.insertClaimSummary(transactionId, "status", "completed", originTag, jdbcTemplate);
-        TestUtils.insertClaimSummary(transactionId, "claimDateTime", time, originTag, jdbcTemplate);
+        final String time = getCreatedOn(10);
+        TestUtils.insertClaim(TRANSACTION_ID, "<test>testing</test>", 1, ORIGIN_TAG, jdbcTemplate);
+        TestUtils.insertClaimSummary(TRANSACTION_ID, "status", "completed", ORIGIN_TAG, jdbcTemplate);
+        TestUtils.insertClaimSummary(TRANSACTION_ID, "claimDateTime", time, ORIGIN_TAG, jdbcTemplate);
         databasePurgeServiceImpl.invoke();
-        assertThat(TestUtils.transactionIdExistsInClaim(transactionId, jdbcTemplate), is(false));
-        assertThat(TestUtils.transactionIdExistsInClaimSummary(transactionId, jdbcTemplate), is(true));
+        assertThat(TestUtils.transactionIdExistsInClaim(TRANSACTION_ID, jdbcTemplate), is(false));
+        assertThat(TestUtils.transactionIdExistsInClaimSummary(TRANSACTION_ID, jdbcTemplate), is(true));
     }
 
     @Test
     public void testInvokeNewRecord() throws Exception {
-        String time = getCreatedOn(7);
-        TestUtils.insertClaim(transactionId, "<test>testing</test>", 1, originTag, jdbcTemplate);
-        TestUtils.insertClaimSummary(transactionId, "status", "completed", originTag, jdbcTemplate);
-        TestUtils.insertClaimSummary(transactionId, "claimDateTime", time, originTag, jdbcTemplate);
+        final String time = getCreatedOn(7);
+        TestUtils.insertClaim(TRANSACTION_ID, "<test>testing</test>", 1, ORIGIN_TAG, jdbcTemplate);
+        TestUtils.insertClaimSummary(TRANSACTION_ID, "status", "completed", ORIGIN_TAG, jdbcTemplate);
+        TestUtils.insertClaimSummary(TRANSACTION_ID, "claimDateTime", time, ORIGIN_TAG, jdbcTemplate);
         databasePurgeServiceImpl.invoke();
-        assertThat(TestUtils.transactionIdExistsInClaim(transactionId, jdbcTemplate), is(true));
-        assertThat(TestUtils.transactionIdExistsInClaimSummary(transactionId, jdbcTemplate), is(true));
+        assertThat(TestUtils.transactionIdExistsInClaim(TRANSACTION_ID, jdbcTemplate), is(true));
+        assertThat(TestUtils.transactionIdExistsInClaimSummary(TRANSACTION_ID, jdbcTemplate), is(true));
     }
 
     private String getCreatedOn(final Integer interval) {

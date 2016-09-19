@@ -6,14 +6,16 @@ import gov.dwp.carers.helper.Utils;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by peterwhitehead on 16/06/2016.
  */
 public class TestUtils extends Utils {
-    private static final transient SimpleDateFormat simpleDateFormat = new SimpleDateFormat("ddMMyyyyHHmm");
-
     public static void insertClaim(final String transactionId,
                                      final String xml, final Integer drsStatus,
                                      final String originTag, final JdbcTemplate jdbcTemplate) {
@@ -56,8 +58,9 @@ public class TestUtils extends Utils {
         return jdbcTemplate.query(selectSql, resultSet -> resultSet.next() ? resultSet.getString(1) : "No record", transactionId, key);
     }
 
-    public static List<ClaimSummary> createClaims(String claimType, String dateTime) throws Exception {
-        List<ClaimSummary> claims = new ArrayList<>();
+    public static List<ClaimSummary> createClaims(final String claimType, final String dateTime) throws Exception {
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("ddMMyyyyHHmm");
+        final List<ClaimSummary> claims = new ArrayList<>();
         claims.add(new ClaimSummary("1610000234", claimType, "AB123456B", "fred", "bieber", simpleDateFormat.parse(dateTime).getTime(), "received"));
         claims.add(new ClaimSummary("1610000235", claimType, "AB123457B", "fred1", "bieber1", simpleDateFormat.parse(dateTime).getTime(), "received"));
         claims.add(new ClaimSummary("1610000236", claimType, "AB123458B", "fred2", "bieber2", simpleDateFormat.parse(dateTime).getTime(), "received"));
@@ -65,27 +68,27 @@ public class TestUtils extends Utils {
     }
 
     public static Map<String, Long> getClaimNumbersFiltered() {
-        Map<String, Long> claimNumbersFiltered = new HashMap<>();
+        final Map<String, Long> claimNumbersFiltered = new ConcurrentHashMap<>();
         claimNumbersFiltered.put("14092016", 1L);
         return claimNumbersFiltered;
     }
 
     public static Map<String, TabCount> getTabCounts() {
-        Map<String, TabCount> counts = new HashMap<>();
+        final Map<String, TabCount> counts = new ConcurrentHashMap<>();
         counts.put("counts", new TabCount(1L, 2L, 3L));
         return counts;
     }
 
-    public static List<List<String>> getSummaryValues(String dateTime) {
-        List<List<String>> summary = new ArrayList<>();
-        List<String> header = Arrays.asList("NINO", "Claim Date Time", "Claim Type", "Surname", "sortby", "Status", "Forename");
-        List<String> data = Arrays.asList("AB123456B", dateTime, "claim", "bieber", "b", "received", "fred");
+    public static List<List<String>> getSummaryValues(final String dateTime) {
+        final List<List<String>> summary = new ArrayList<>();
+        final List<String> header = Arrays.asList("NINO", "Claim Date Time", "Claim Type", "Surname", "sortby", "Status", "Forename");
+        final List<String> data = Arrays.asList("AB123456B", dateTime, "claim", "bieber", "b", "received", "fred");
         summary.add(header);
         summary.add(data);
         return summary;
     }
 
     public static SimpleDateFormat getSimpleDateFormat() {
-        return simpleDateFormat;
+        return new SimpleDateFormat("ddMMyyyyHHmm");
     }
 }

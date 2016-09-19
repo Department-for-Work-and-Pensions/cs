@@ -9,8 +9,8 @@ import org.w3c.dom.Document;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
@@ -48,7 +48,7 @@ public class ClaimServiceHelperTest {
 
     @Test
     public void testGetTimeGeneratedForce() throws Exception {
-        String date = DateTimeFormatter.ofPattern("ddMMyyyyHHmm").format(LocalDateTime.now());
+        final String date = DateTimeFormatter.ofPattern("ddMMyyyyHHmm").format(LocalDateTime.now());
         assertThat(claimServiceHelper.getTimeGenerated(doc, true), is(date));
     }
 
@@ -69,16 +69,16 @@ public class ClaimServiceHelperTest {
 
     @Test
     public void testGetClaimSummaryKeyValue() throws Exception {
-        Map<String, String> summaryKeyValues = createSummaryKeyValue("110720161641");
-        Map<String, String> summaryKeyValuesNew = claimServiceHelper.getClaimSummaryKeyValue(msg, false);
+        final Map<String, String> summaryKeyValues = createSummaryKeyValue("110720161641");
+        final Map<String, String> summaryKeyValuesNew = claimServiceHelper.getClaimSummaryKeyValue(msg, false);
         org.assertj.core.api.Assertions.assertThat(summaryKeyValues).containsAllEntriesOf(summaryKeyValuesNew);
     }
 
     @Test
     public void testGetClaimSummaryKeyValueForce() throws Exception {
-        String date = DateTimeFormatter.ofPattern("ddMMyyyyHHmm").format(LocalDateTime.now());
-        Map<String, String> summaryKeyValues = createSummaryKeyValue(date);
-        Map<String, String> summaryKeyValuesNew = claimServiceHelper.getClaimSummaryKeyValue(msg, true);
+        final String date = DateTimeFormatter.ofPattern("ddMMyyyyHHmm").format(LocalDateTime.now());
+        final Map<String, String> summaryKeyValues = createSummaryKeyValue(date);
+        final Map<String, String> summaryKeyValuesNew = claimServiceHelper.getClaimSummaryKeyValue(msg, true);
         org.assertj.core.api.Assertions.assertThat(summaryKeyValues).containsAllEntriesOf(summaryKeyValuesNew);
     }
 
@@ -87,8 +87,8 @@ public class ClaimServiceHelperTest {
         doc = xmlSchemaDecryptor.createDocumentFromXML(msg);
     }
 
-    private Map<String, String> createSummaryKeyValue(String date) {
-        Map<String, String> summaryKeyValues = new HashMap<>();
+    private Map<String, String> createSummaryKeyValue(final String date) {
+        final Map<String, String> summaryKeyValues = new ConcurrentHashMap<>();
         summaryKeyValues.put("claimType", "claim");
         summaryKeyValues.put("forename", "Joe");
         summaryKeyValues.put("surname", "kReSbgCqmecC811wWBAJRTNvSdCakyF/wb2smR5nO4CdqjtR/q1V8NSb/JWZM7Ju");

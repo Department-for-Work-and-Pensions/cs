@@ -33,7 +33,7 @@ public class ClaimSummary {
         return transactionId;
     }
 
-    public void setTransactionId(String transactionId) {
+    public void setTransactionId(final String transactionId) {
         this.transactionId = transactionId;
     }
 
@@ -41,7 +41,7 @@ public class ClaimSummary {
         return claimType;
     }
 
-    public void setClaimType(String claimType) {
+    public void setClaimType(final String claimType) {
         this.claimType = claimType;
     }
 
@@ -49,7 +49,7 @@ public class ClaimSummary {
         return nino;
     }
 
-    public void setNino(String nino) {
+    public void setNino(final String nino) {
         this.nino = nino;
     }
 
@@ -57,7 +57,7 @@ public class ClaimSummary {
         return forename;
     }
 
-    public void setForename(String forename) {
+    public void setForename(final String forename) {
         this.forename = forename;
     }
 
@@ -65,7 +65,7 @@ public class ClaimSummary {
         return surname;
     }
 
-    public void setSurname(String surname) {
+    public void setSurname(final String surname) {
         this.surname = surname;
     }
 
@@ -73,7 +73,7 @@ public class ClaimSummary {
         return claimDateTime;
     }
 
-    public void setClaimDateTime(Long claimDateTime) {
+    public void setClaimDateTime(final Long claimDateTime) {
         this.claimDateTime = claimDateTime;
     }
 
@@ -81,7 +81,7 @@ public class ClaimSummary {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(final String status) {
         this.status = status;
     }
 
@@ -89,7 +89,7 @@ public class ClaimSummary {
         return drsStatus;
     }
 
-    public void setDrsStatus(String drsStatus) {
+    public void setDrsStatus(final String drsStatus) {
         this.drsStatus = drsStatus;
     }
 }

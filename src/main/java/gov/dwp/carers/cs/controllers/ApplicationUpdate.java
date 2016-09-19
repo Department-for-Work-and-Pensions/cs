@@ -23,7 +23,9 @@ public class ApplicationUpdate {
     @RequestMapping(value = "/claim/{transactionId}/{status}", method = RequestMethod.PUT)
     public @ResponseBody String claimUpdate(@PathVariable("transactionId") final String transactionId, @PathVariable("status") final String status) {
         RenameThread.renameThreadFromTransactionId(transactionId);
-        LOGGER.info("/claim called with transactionId:" + transactionId + ",status:" + status);
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info("/claim called with transactionId:" + transactionId + ",status:" + status);
+        }
         counters.incrementMetric(applicationMetric);
         return claimUpdateService.claimUpdate(transactionId, status);
     }
@@ -31,7 +33,9 @@ public class ApplicationUpdate {
     @RequestMapping(value = "/claim/submit", method = RequestMethod.POST)
     public @ResponseBody String submitClaim(@RequestBody final String requestBody) {
         RenameThread.getTransactionIdAndRenameThread(requestBody);
-        LOGGER.info("/claim/submit called");
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info("/claim/submit called");
+        }
         counters.incrementMetric(applicationMetric);
         return claimUpdateService.submitClaim(requestBody);
     }
@@ -39,14 +43,18 @@ public class ApplicationUpdate {
     @RequestMapping(value = "/claim/submit-force-today", method = RequestMethod.POST)
     public @ResponseBody String submitClaimForceToday(@RequestBody final String requestBody) {
         RenameThread.getTransactionIdAndRenameThread(requestBody);
-        LOGGER.info("/claim/submit-force-today called");
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info("/claim/submit-force-today called");
+        }
         counters.incrementMetric(applicationMetric);
         return claimUpdateService.submitClaimForceToday(requestBody);
     }
 
     @RequestMapping(value = "/purge/{originTag}", method = RequestMethod.POST)
     public @ResponseBody String purge(@PathVariable("originTag") final String originTag) {
-        LOGGER.info("/purge called with originTag:" + originTag);
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info("/purge called with originTag:" + originTag);
+        }
         counters.incrementMetric(applicationMetric);
         return claimUpdateService.purge(originTag);
     }

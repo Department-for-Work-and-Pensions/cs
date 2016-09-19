@@ -43,6 +43,7 @@ public class DatabaseClaimServiceImplTest {
     private Map<String, Long> data;
     private Map<String, TabCount> tabs;
     private List<List<String>> export;
+    private static final String ORIGIN_TAG = "GB";
 
     @Mock
     private TransactionTemplate transactionTemplate;
@@ -52,8 +53,8 @@ public class DatabaseClaimServiceImplTest {
 
     @Mock
     private PlatformTransactionManager transactionManager;
-    private String claimMetric = "metric1";
-    private String claimSummaryMetric = "metric2";
+    private static final String CLAIM_METRIC = "metric1";
+    private static final String CLAIM_SUMMARY_METRIC = "metric2";
     private String date;
     private ClaimSummary claimSummary;
     private final transient SimpleDateFormat simpleDateFormat = new SimpleDateFormat("ddMMyyyyHHmm");
@@ -66,7 +67,7 @@ public class DatabaseClaimServiceImplTest {
         dataSource = new EmbeddedPostgresDB().dataSource();
         jdbcTemplate = new JdbcTemplate(dataSource);
         databaseClaimServiceImpl = new DatabaseClaimServiceImpl(jdbcTemplate, transactionManager,
-                new ClaimServiceHelper(new XmlSchemaDecryptor(), new XMLExtractor()), counters, claimMetric, claimSummaryMetric);
+                new ClaimServiceHelper(new XmlSchemaDecryptor(), new XMLExtractor()), counters, CLAIM_METRIC, CLAIM_SUMMARY_METRIC);
     }
 
     @After
@@ -168,45 +169,45 @@ public class DatabaseClaimServiceImplTest {
         this.transactionId = transactionId;
     }
 
-    private void givenMessageHasBeenReceived(String status, String claimType, String queryDate) throws Exception {
+    private void givenMessageHasBeenReceived(final String status, final String claimType, final String queryDate) throws Exception {
         if (queryDate == null) {
-            Date newDate = new Date();
+            final Date newDate = new Date();
             date = simpleDateFormat.format(newDate);
         } else {
             date = queryDate;
         }
 
-        TestUtils.insertClaim(transactionId, "<test>testing</test>", 1, "GB", jdbcTemplate);
-        TestUtils.insertClaimSummary(transactionId, "status", status, "GB", jdbcTemplate);
-        TestUtils.insertClaimSummary(transactionId, "claimDateTime", date, "GB", jdbcTemplate);
-        TestUtils.insertClaimSummary(transactionId, "claimType", claimType, "GB", jdbcTemplate);
-        TestUtils.insertClaimSummary(transactionId, "sortby", "a", "GB", jdbcTemplate);
-        TestUtils.insertClaimSummary(transactionId, "nino", "AB123456B", "GB", jdbcTemplate);
-        TestUtils.insertClaimSummary(transactionId, "forename", "fred", "GB", jdbcTemplate);
-        TestUtils.insertClaimSummary(transactionId, "surname", "bieber", "GB", jdbcTemplate);
+        TestUtils.insertClaim(transactionId, "<test>testing</test>", 1, ORIGIN_TAG, jdbcTemplate);
+        TestUtils.insertClaimSummary(transactionId, "status", status, ORIGIN_TAG, jdbcTemplate);
+        TestUtils.insertClaimSummary(transactionId, "claimDateTime", date, ORIGIN_TAG, jdbcTemplate);
+        TestUtils.insertClaimSummary(transactionId, "claimType", claimType, ORIGIN_TAG, jdbcTemplate);
+        TestUtils.insertClaimSummary(transactionId, "sortby", "a", ORIGIN_TAG, jdbcTemplate);
+        TestUtils.insertClaimSummary(transactionId, "nino", "AB123456B", ORIGIN_TAG, jdbcTemplate);
+        TestUtils.insertClaimSummary(transactionId, "forename", "fred", ORIGIN_TAG, jdbcTemplate);
+        TestUtils.insertClaimSummary(transactionId, "surname", "bieber", ORIGIN_TAG, jdbcTemplate);
         TestUtils.insertClaimAudit(transactionId, 1, jdbcTemplate);
         claimSummary = new ClaimSummary(transactionId, claimType, "AB123456B", "fred", "bieber", simpleDateFormat.parse(date).getTime(), status);
         date = date.substring(0, 8);
     }
 
     private void whenClaimsCalled() {
-        claims = databaseClaimServiceImpl.claims("GB", date);
+        claims = databaseClaimServiceImpl.claims(ORIGIN_TAG, date);
     }
 
     private void whenCircsCalled() {
-        claims = databaseClaimServiceImpl.claims("GB", date);
+        claims = databaseClaimServiceImpl.claims(ORIGIN_TAG, date);
     }
 
     private void whenClaimsFilteredCalled() {
-        claims = databaseClaimServiceImpl.claimsFiltered("GB", date, "received");
+        claims = databaseClaimServiceImpl.claimsFiltered(ORIGIN_TAG, date, "received");
     }
 
     private void whenClaimsFilteredBySurnameCalled() {
-        claims = databaseClaimServiceImpl.claimsFilteredBySurname("GB", date, "atom");
+        claims = databaseClaimServiceImpl.claimsFilteredBySurname(ORIGIN_TAG, date, "atom");
     }
 
     private void whenClaimNumbersFilteredCalled() {
-        this.data = databaseClaimServiceImpl.claimNumbersFiltered("GB", Arrays.asList("received"));
+        this.data = databaseClaimServiceImpl.claimNumbersFiltered(ORIGIN_TAG, Arrays.asList("received"));
     }
 
     private void thenClaimNumbersFilteredReturnedShouldBe() {
@@ -214,7 +215,7 @@ public class DatabaseClaimServiceImplTest {
     }
 
     private void whenClaimsExportedCalled() {
-        this.export = databaseClaimServiceImpl.export("GB");
+        this.export = databaseClaimServiceImpl.export(ORIGIN_TAG);
     }
 
     private void thenClaimsExportedReturnedShouldBe() {
@@ -226,7 +227,7 @@ public class DatabaseClaimServiceImplTest {
     }
 
     private void whenFullClaimCalled() {
-        this.msg = databaseClaimServiceImpl.fullClaim(transactionId, "GB");
+        this.msg = databaseClaimServiceImpl.fullClaim(transactionId, ORIGIN_TAG);
     }
 
     private void thenFullClaimReturnedShouldBe() {
@@ -234,27 +235,27 @@ public class DatabaseClaimServiceImplTest {
         assertThat(TestUtils.getKeyValue(transactionId, "status", jdbcTemplate), is("viewed"));
     }
 
-    private void whenUpdateStatusCalled(String status) {
+    private void whenUpdateStatusCalled(final String status) {
         this.rtn = databaseClaimServiceImpl.updateClaim(transactionId, status);
     }
 
-    private void thenUpdateStatusShouldBe(String status) {
+    private void thenUpdateStatusShouldBe(final String status) {
         assertThat(rtn, is(Boolean.TRUE));
         assertThat(TestUtils.getKeyValue(transactionId, "status", jdbcTemplate), is(status));
         assertThat(TestUtils.checkStatusHistory(transactionId, status, jdbcTemplate), is("received"));
     }
 
     private void whenClaimSummaryTabsCalled() {
-       this.tabs = databaseClaimServiceImpl.constructClaimSummaryWithTabTotals("GB", date);
+       this.tabs = databaseClaimServiceImpl.constructClaimSummaryWithTabTotals(ORIGIN_TAG, date);
     }
 
     private void thenClaimSummaryTabsShouldBe() {
-        TabCount tabCount = new TabCount(1L, 0L, 0L);
+        final TabCount tabCount = new TabCount(1L, 0L, 0L);
         org.assertj.core.api.Assertions.assertThat(tabs.get("counts")).isEqualToComparingFieldByField(tabCount);
     }
 
     private void whenPurgeCalled() {
-        this.rtn = databaseClaimServiceImpl.purge("GB");
+        this.rtn = databaseClaimServiceImpl.purge(ORIGIN_TAG);
     }
 
     private void thenPurgeReturnedShouldBe() {
@@ -272,7 +273,7 @@ public class DatabaseClaimServiceImplTest {
     }
 
     private void whenSubmitMessageCalled() {
-        this.rtn = databaseClaimServiceImpl.submitMessage(msg, true, "GB", transactionId);
+        this.rtn = databaseClaimServiceImpl.submitMessage(msg, true, ORIGIN_TAG, transactionId);
     }
 
     private void thenSubmitMessageShouldBe() {
@@ -281,7 +282,7 @@ public class DatabaseClaimServiceImplTest {
         assertThat(TestUtils.getKeyValue(transactionId, "status", jdbcTemplate), is("received"));
     }
 
-    private void thenUpdateStatusReturnedShouldBe(String status) {
+    private void thenUpdateStatusReturnedShouldBe(final String status) {
         assertThat(TestUtils.getKeyValue(transactionId, "status", jdbcTemplate), is(status));
     }
 }

@@ -20,7 +20,8 @@ public class ClaimUpdateServiceImpl implements ClaimUpdateService {
     private final DatabaseClaimService databaseClaimService;
     private final DrSubmitter drSubmitter;
     private final Boolean dfEnabled;
-    private final XMLExtractor xmlExtractor;;
+    private final XMLExtractor xmlExtractor;
+    private static final String ORIGIN_TAG = "GB";
 
     @Override
     public String claimUpdate(final String transactionId, final String status) {
@@ -67,7 +68,7 @@ public class ClaimUpdateServiceImpl implements ClaimUpdateService {
             LOGGER.debug("originTag:" + originTag);
         }
         // submit to drs only if it is enabled
-        if (result && dfEnabled && "GB".equals(originTag)) {
+        if (result && dfEnabled && ORIGIN_TAG.equals(originTag)) {
             result = drSubmitter.drSubmit(xml, transactionId);
         }
         if (!result) {

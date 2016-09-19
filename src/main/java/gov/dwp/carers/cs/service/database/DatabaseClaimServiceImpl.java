@@ -4,7 +4,6 @@ import gov.dwp.carers.cs.helpers.ClaimServiceHelper;
 import gov.dwp.carers.cs.model.ClaimSummary;
 import gov.dwp.carers.cs.model.ClaimSummaryCount;
 import gov.dwp.carers.cs.model.TabCount;
-import gov.dwp.carers.cs.service.messaging.DfStatuses;
 import gov.dwp.carers.monitor.Counters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,9 +16,9 @@ import org.springframework.transaction.support.TransactionTemplate;
 import javax.inject.Inject;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Component
@@ -117,7 +116,7 @@ public class DatabaseClaimServiceImpl implements DatabaseClaimService {
     @Override
     public List<ClaimSummary> claimsFilteredBySurname(final String originTag, final String dateString, final String sortBy) {
         //1) CLAIM_DATETIME_KEY 2) originTag 3) date 4) STATUS_KEY 5) originTag 6) sort type 7) sort 7) sortKey 8) originTag
-        final String surnames = (sortBy.equalsIgnoreCase("ntoz")) ? "[n-z]%" : "[a-m]%";
+        final String surnames = "ntoz".equalsIgnoreCase(sortBy) ? "[n-z]%" : "[a-m]%";
         final String sql = "SELECT * FROM crosstab(" +
                 "'SELECT cs.transId as transactionId, cs.key as key, cs.value as value " +
                 "FROM carers.claimsummary cs " +
@@ -240,7 +239,7 @@ public class DatabaseClaimServiceImpl implements DatabaseClaimService {
                 ") as c1 on (c1.daysDate = lasteightdays.days)";
         final List<ClaimSummaryCount> claimSummaryCounts = jdbcTemplate.query(sql, new ClaimSummaryCountRowMapper(),
                 ClaimServiceHelper.CLAIM_DATETIME_KEY, originTag, ClaimServiceHelper.STATUS_KEY, originTag);
-        Map<String, Long> result = claimSummaryCounts.stream().collect(Collectors.toMap(ClaimSummaryCount::getDay, ClaimSummaryCount::getCount));
+        final Map<String, Long> result = claimSummaryCounts.stream().collect(Collectors.toMap(ClaimSummaryCount::getDay, ClaimSummaryCount::getCount));
         return result;
     }
 
@@ -257,7 +256,7 @@ public class DatabaseClaimServiceImpl implements DatabaseClaimService {
 
     @Override
     public Map<String, TabCount> constructClaimSummaryWithTabTotals(final String originTag, final String dateString) {
-        Map<String, TabCount> counts = new HashMap<>();
+        final Map<String, TabCount> counts = new ConcurrentHashMap<>();
         counts.put("counts",  new TabCount(countOfClaimsForTab(originTag, dateString, "[a-m]%"),
                 countOfClaimsForTab(originTag, dateString, "[n-z]%"),
                 countOfCircsForTab(originTag, dateString)));

@@ -46,15 +46,16 @@ public class DfStatusesImpl implements DfStatuses {
 
     private List<ClaimStatus> getStatuses(final List<ClaimSummary> claimSummaries) {
         List<ClaimStatus> rtnClaimStatuses;
-        if (!claimSummaries.isEmpty()) {
+        if (claimSummaries.isEmpty()) {
+            rtnClaimStatuses = new ArrayList<>();
+        } else {
             final List<String> transactionIds = claimSummaries.stream().map(claimSummary -> claimSummary.getTransactionId()).collect(Collectors.toList());
             final HttpHeaders headers = new HttpHeaders();
             final MediaType mediaType = new MediaType("application", "json", StandardCharsets.UTF_8);
             headers.setContentType(mediaType);
             final HttpEntity<List<String>> request = new HttpEntity<>(transactionIds, headers);
             try {
-                ResponseEntity<List<ClaimStatus>> responseEntity = restTemplate.exchange(dfUrl + "/statuses", HttpMethod.POST, request, new ParameterizedTypeReference<List<ClaimStatus>>() {
-                });
+                final ResponseEntity<List<ClaimStatus>> responseEntity = restTemplate.exchange(dfUrl + "/statuses", HttpMethod.POST, request, new ParameterizedTypeReference<List<ClaimStatus>>() {});
                 processResponse(responseEntity);
                 rtnClaimStatuses = responseEntity.getBody();
             } catch (RestClientException rce) {
@@ -67,8 +68,6 @@ public class DfStatusesImpl implements DfStatuses {
                 LOGGER.error("Status retrieval from DF failed.", e);
                 throw new MessageDistributionException("Status retrieval from DF failed! " + e.getMessage() + ".", e);
             }
-        } else {
-            rtnClaimStatuses = new ArrayList<>();
         }
         return rtnClaimStatuses;
     }

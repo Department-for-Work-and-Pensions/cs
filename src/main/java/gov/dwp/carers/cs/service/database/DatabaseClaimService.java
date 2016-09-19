@@ -1,7 +1,6 @@
 package gov.dwp.carers.cs.service.database;
 
 import gov.dwp.carers.cs.model.ClaimSummary;
-import gov.dwp.carers.cs.model.ClaimSummaryCount;
 import gov.dwp.carers.cs.model.TabCount;
 
 import java.sql.SQLException;

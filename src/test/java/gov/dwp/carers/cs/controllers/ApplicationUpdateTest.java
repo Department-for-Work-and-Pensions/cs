@@ -25,7 +25,7 @@ public class ApplicationUpdateTest {
     private ClaimUpdateService claimUpdateService;
     private String msg;
     private String transactionId;
-    private final String originTag = "GB";
+    private static final String ORIGIN_TAG = "GB";
 
     @Mock
     private Counters counters;
@@ -40,8 +40,8 @@ public class ApplicationUpdateTest {
     @Test
     public void testClaimUpdate() throws Exception {
         givenMessageHasArrived(TestMessage.ValidXMLWithRSASignature.getFileName(), TestMessage.ValidXMLWithRSASignature.getTransactionId());
-        when(claimUpdateService.claimUpdate(transactionId, originTag)).thenReturn("Success");
-        assertThat(applicationUpdate.claimUpdate(transactionId, originTag), is("Success"));
+        when(claimUpdateService.claimUpdate(transactionId, ORIGIN_TAG)).thenReturn("Success");
+        assertThat(applicationUpdate.claimUpdate(transactionId, ORIGIN_TAG), is("Success"));
     }
 
     @Test
@@ -61,8 +61,8 @@ public class ApplicationUpdateTest {
     @Test
     public void testPurge() throws Exception {
         givenMessageHasArrived(TestMessage.ValidXMLWithRSASignature.getFileName(), TestMessage.ValidXMLWithRSASignature.getTransactionId());
-        when(claimUpdateService.purge(originTag)).thenReturn("Success");
-        assertThat(applicationUpdate.purge(originTag), is("Success"));
+        when(claimUpdateService.purge(ORIGIN_TAG)).thenReturn("Success");
+        assertThat(applicationUpdate.purge(ORIGIN_TAG), is("Success"));
     }
 
     private void givenMessageHasArrived(final String fileName, final String transactionId) throws Exception {

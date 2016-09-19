@@ -13,8 +13,8 @@ import javax.xml.bind.DatatypeConverter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by peterwhitehead on 06/09/2016.
@@ -78,12 +78,11 @@ public class ClaimServiceHelper {
     }
 
     public String getSortBy(final String surname) {
-        final String sortBy = (surname.isEmpty()) ? "" : decryptString(surname).trim().substring(0, 1).toLowerCase();
+        final String sortBy = surname.isEmpty() ? "" : decryptString(surname).trim().substring(0, 1).toLowerCase();
         return sortBy;
     }
 
     public Map<String, String> getClaimSummaryKeyValue(final String xml, final Boolean forceToday) {
-        //transactionId: String, claimType:String, nino: String, forename: String, surname: String, claimDateTime: DateTime, status: String
         Document doc;
         try {
             doc = xmlSchemaDecryptor.createDocumentFromXML(xml);
@@ -96,7 +95,7 @@ public class ClaimServiceHelper {
         final String surname = getSurname(doc, claimType);
         final String status = "received";
 
-        final Map<String, String> summaryKeyValues = new HashMap<>();
+        final Map<String, String> summaryKeyValues = new ConcurrentHashMap<>();
         summaryKeyValues.put(CLAIM_TYPE_KEY, claimType);
         summaryKeyValues.put(NINO_KEY, getNino(doc, claimType));
         summaryKeyValues.put(FORENAME_KEY, getForename(doc, claimType));
@@ -108,7 +107,7 @@ public class ClaimServiceHelper {
         return summaryKeyValues;
     }
 
-    private String decryptString(String text) {
+    private String decryptString(final String text) {
         try {
             return encryptorAES.decrypt(DatatypeConverter.parseBase64Binary(text));
         } catch (DwpRuntimeException e) {

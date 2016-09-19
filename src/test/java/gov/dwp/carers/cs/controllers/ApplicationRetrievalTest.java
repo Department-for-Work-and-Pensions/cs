@@ -26,9 +26,9 @@ import static org.mockito.Mockito.when;
 @TestPropertySource(value = "classpath:test.application.properties")
 @RunWith(MockitoJUnitRunner.class)
 public class ApplicationRetrievalTest {
-    private final String originTag = "GB";
-    private final String date = "14092016";
-    private final String dateTime = "140920160909";
+    private static final String ORIGIN_TAG = "GB";
+    private static final String DATE = "14092016";
+    private static final String DATETIME = "140920160909";
     private String transactionId;
     private String msg;
     private List<ClaimSummary> claims;
@@ -45,73 +45,73 @@ public class ApplicationRetrievalTest {
     @Before
     public void setUp() throws Exception {
         transactionId = "1610000234";
-        claims = TestUtils.createClaims("claim", dateTime);
+        claims = TestUtils.createClaims("claim", DATETIME);
         applicationRetrieval = new ApplicationRetrieval(claimRetrievalService, counters, "cs-count");
     }
 
     @Test
     public void testClaimsForDate() throws Exception {
-        when(claimRetrievalService.claimsForDate(date, originTag)).thenReturn(claims);
-        retrievedClaims = applicationRetrieval.claimsForDate(date, originTag);
+        when(claimRetrievalService.claimsForDate(DATE, ORIGIN_TAG)).thenReturn(claims);
+        retrievedClaims = applicationRetrieval.claimsForDate(DATE, ORIGIN_TAG);
         thenClaimSummaryShouldBe();
     }
 
     @Test
     public void testClaim() throws Exception {
         givenMessageHasArrived(TestMessage.ValidXMLWithRSASignature.getFileName(), TestMessage.ValidXMLWithRSASignature.getTransactionId());
-        when(claimRetrievalService.claim(transactionId, originTag)).thenReturn(msg);
-        assertThat(applicationRetrieval.claim(transactionId, originTag), is(msg));
+        when(claimRetrievalService.claim(transactionId, ORIGIN_TAG)).thenReturn(msg);
+        assertThat(applicationRetrieval.claim(transactionId, ORIGIN_TAG), is(msg));
     }
 
     @Test
     public void testCircs() throws Exception {
         givenMessageHasArrived(TestMessage.ValidXMLWithRSASignature.getFileName(), TestMessage.ValidXMLWithRSASignature.getTransactionId());
-        when(claimRetrievalService.claim(transactionId, originTag)).thenReturn(msg);
-        assertThat(applicationRetrieval.claim(transactionId, originTag), is(msg));
+        when(claimRetrievalService.claim(transactionId, ORIGIN_TAG)).thenReturn(msg);
+        assertThat(applicationRetrieval.claim(transactionId, ORIGIN_TAG), is(msg));
     }
 
     @Test
     public void testClaimsForDateFiltered() throws Exception {
-        when(claimRetrievalService.claimsForDateFiltered(date, "received", originTag)).thenReturn(claims);
-        retrievedClaims = applicationRetrieval.claimsForDateFiltered(date, "received", originTag);
+        when(claimRetrievalService.claimsForDateFiltered(DATE, "received", ORIGIN_TAG)).thenReturn(claims);
+        retrievedClaims = applicationRetrieval.claimsForDateFiltered(DATE, "received", ORIGIN_TAG);
         thenClaimSummaryShouldBe();
     }
 
     @Test
     public void testClaimsForDateFilteredBySurname() throws Exception {
-        when(claimRetrievalService.claimsForDateFilteredBySurname(date, "atoz", originTag)).thenReturn(claims);
-        retrievedClaims = applicationRetrieval.claimsForDateFilteredBySurname(date, "atoz", originTag);
+        when(claimRetrievalService.claimsForDateFilteredBySurname(DATE, "atoz", ORIGIN_TAG)).thenReturn(claims);
+        retrievedClaims = applicationRetrieval.claimsForDateFilteredBySurname(DATE, "atoz", ORIGIN_TAG);
         thenClaimSummaryShouldBe();
     }
 
     @Test
     public void testClaimsNumbersFiltered() throws Exception {
-        Map<String, Long> claimNumbersFiltered = TestUtils.getClaimNumbersFiltered();
-        when(claimRetrievalService.claimsNumbersFiltered("received", originTag)).thenReturn(claimNumbersFiltered);
-        Map<String, Long> data = applicationRetrieval.claimsNumbersFiltered("received", originTag);
-        assertThat(data.get(date), is(1L));
+        final Map<String, Long> claimNumbersFiltered = TestUtils.getClaimNumbersFiltered();
+        when(claimRetrievalService.claimsNumbersFiltered("received", ORIGIN_TAG)).thenReturn(claimNumbersFiltered);
+        final Map<String, Long> data = applicationRetrieval.claimsNumbersFiltered("received", ORIGIN_TAG);
+        assertThat(data.get(DATE), is(1L));
     }
 
     @Test
     public void testCountOfClaimsForTabs() throws Exception {
-        Map<String, TabCount> counts = TestUtils.getTabCounts();
-        when(claimRetrievalService.countOfClaimsForTabs(date, originTag)).thenReturn(counts);
-        Map<String, TabCount> data = applicationRetrieval.countOfClaimsForTabs(date, originTag);
+        final Map<String, TabCount> counts = TestUtils.getTabCounts();
+        when(claimRetrievalService.countOfClaimsForTabs(DATE, ORIGIN_TAG)).thenReturn(counts);
+        final Map<String, TabCount> data = applicationRetrieval.countOfClaimsForTabs(DATE, ORIGIN_TAG);
         org.assertj.core.api.Assertions.assertThat(data.get("counts")).isEqualToComparingFieldByField(counts.get("counts"));
     }
 
     @Test
     public void testRender() throws Exception {
         givenMessageHasArrived(TestMessage.ValidXMLWithRSASignature.getFileName(), TestMessage.ValidXMLWithRSASignature.getTransactionId());
-        when(claimRetrievalService.render(transactionId, originTag)).thenReturn(msg);
-        assertThat(applicationRetrieval.render(transactionId, originTag), is(msg));
+        when(claimRetrievalService.render(transactionId, ORIGIN_TAG)).thenReturn(msg);
+        assertThat(applicationRetrieval.render(transactionId, ORIGIN_TAG), is(msg));
     }
 
     @Test
     public void testExport() throws Exception {
-        List<List<String>> summary = TestUtils.getSummaryValues(dateTime);
-        when(claimRetrievalService.export(originTag)).thenReturn(summary);
-        org.assertj.core.api.Assertions.assertThat(applicationRetrieval.export(originTag)).containsOnlyElementsOf(summary);
+        final List<List<String>> summary = TestUtils.getSummaryValues(DATETIME);
+        when(claimRetrievalService.export(ORIGIN_TAG)).thenReturn(summary);
+        org.assertj.core.api.Assertions.assertThat(applicationRetrieval.export(ORIGIN_TAG)).containsOnlyElementsOf(summary);
     }
 
     private void thenClaimSummaryShouldBe() {

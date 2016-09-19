@@ -27,7 +27,7 @@ public class DatabasePurgeServiceImpl implements Procedure {
     public void invoke() {
         final Object[] args = new Object[] { getCreatedOnTimestamp(databasePurgePeriod) };
         final int stored = jdbcTemplate.update(PURGE_SQL, args);
-        if (stored <= 0) {
+        if (stored <= 0 && LOGGER.isDebugEnabled()) {
             LOGGER.debug("No old records > " + databasePurgePeriod + " available to be removed from suspiciousmessages table.");
         } else if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Successfully removed " + stored + " old records from suspiciousmessages table");

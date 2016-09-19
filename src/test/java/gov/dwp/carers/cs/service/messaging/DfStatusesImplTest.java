@@ -47,7 +47,7 @@ public class DfStatusesImplTest {
     public void testSubmitMessage() throws Exception {
         givenClaimsNeedStatuses("2");
         whenRestTemplateReturn(HttpStatus.OK);
-        thenMessageReturnedShouldBe("2");
+        thenMessageReturnedShouldBe();
     }
 
     @Test(expected = MessageDistributionException.class)
@@ -109,8 +109,8 @@ public class DfStatusesImplTest {
         when(restTemplate.exchange(anyString(), Mockito.<HttpMethod> any(), Mockito.<HttpEntity<List<String>>> any(), eq(new ParameterizedTypeReference<List<ClaimStatus>>() {}))).thenThrow(exception);
     }
 
-    private void thenMessageReturnedShouldBe(String status) {
-        List<ClaimSummary> claims = dfStatusesImpl.getDfStatuses(claimSummaries);
+    private void thenMessageReturnedShouldBe() {
+        final List<ClaimSummary> claims = dfStatusesImpl.getDfStatuses(claimSummaries);
         for (int i = 0; i < claimSummaries.size(); i++) {
             assertThat(claims.get(i)).isEqualToComparingFieldByField(claimSummaries.get(i));
         }
@@ -120,7 +120,7 @@ public class DfStatusesImplTest {
         dfStatusesImpl.getDfStatuses(claimSummaries);
     }
 
-    protected void givenClaimsNeedStatuses(String status) throws Exception {
+    protected void givenClaimsNeedStatuses(final String status) throws Exception {
         claimSummaries = new ArrayList<>();
         claimSummaries.add(new ClaimSummary("12345678901", "claim", "AB123456A", "bon1", "bieber", 0L, "1"));
         claimSummaries.add(new ClaimSummary("12345678902", "claim", "AB123456B", "bon2", "bieber", 0L, "1"));

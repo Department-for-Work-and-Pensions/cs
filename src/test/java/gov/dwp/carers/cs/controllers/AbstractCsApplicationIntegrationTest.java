@@ -3,8 +3,6 @@ package gov.dwp.carers.cs.controllers;
 import gov.dwp.carers.cs.helpers.TestUtils;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -35,8 +33,6 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @TestPropertySource(locations="classpath:test.application.properties")
 @SpringBootTest(classes = { CsApplication.class }, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public abstract class AbstractCsApplicationIntegrationTest {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractCsApplicationIntegrationTest.class);
-
     private static final String BASE_URL = "http://localhost:";
 
     private final TestRestTemplate testRestTemplate = new TestRestTemplate();
@@ -124,7 +120,7 @@ public abstract class AbstractCsApplicationIntegrationTest {
 
     protected void insertClaimSummary(final String originTag, final String status, final String queryDate, final String claimType) {
         if (queryDate == null) {
-            Date newDate = new Date();
+            final Date newDate = new Date();
             dateTime = TestUtils.getSimpleDateFormat().format(newDate);
         } else {
             dateTime = queryDate;

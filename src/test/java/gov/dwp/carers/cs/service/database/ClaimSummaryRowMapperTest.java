@@ -20,7 +20,7 @@ public class ClaimSummaryRowMapperTest {
     private ClaimSummaryRowMapper claimSummaryRowMapper;
 
     @Mock
-    ResultSet resultSet;
+    private ResultSet resultSet;
 
     @Before
     public void setUp() throws Exception {
@@ -36,7 +36,7 @@ public class ClaimSummaryRowMapperTest {
         when(resultSet.getString("forename")).thenReturn("fred");
         when(resultSet.getString("surname")).thenReturn("bieber");
         when(resultSet.getString("status")).thenReturn("received");
-        ClaimSummary claimSummary = new ClaimSummary("1610000234", "claim", "AB123456B", "fred", "bieber", 1473840540000L, "received");
+        final ClaimSummary claimSummary = new ClaimSummary("1610000234", "claim", "AB123456B", "fred", "bieber", 1473840540000L, "received");
         org.assertj.core.api.Assertions.assertThat(claimSummaryRowMapper.mapRow(resultSet, 1)).isEqualToComparingFieldByField(claimSummary);
     }
 

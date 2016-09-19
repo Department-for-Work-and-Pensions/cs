@@ -23,9 +23,9 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class ClaimRetrievalServiceImplTest {
     private ClaimRetrievalServiceImpl claimRetrievalServiceImpl;
-    private final String dateTime = "140920160909";
-    private final String date = "14092016";
-    private final String originTag = "GB";
+    private static final String DATETIME = "140920160909";
+    private static final String DATE = "14092016";
+    private static final String ORIGIN_TAG = "GB";
     private String transactionId;
     private List<ClaimSummary> claims;
     private List<ClaimSummary> retrievedClaims;
@@ -39,77 +39,77 @@ public class ClaimRetrievalServiceImplTest {
     @Before
     public void setUp() throws Exception {
         transactionId = "1610000234";
-        claims = TestUtils.createClaims("claim", dateTime);
+        claims = TestUtils.createClaims("claim", DATETIME);
         claimRetrievalServiceImpl = new ClaimRetrievalServiceImpl(databaseClaimService, dfStatuses);
     }
 
     @Test
     public void testClaimsForDate() throws Exception {
         when(dfStatuses.getDfStatuses(claims)).thenReturn(claims);
-            when(databaseClaimService.claims(originTag, date)).thenReturn(claims);
-        retrievedClaims = claimRetrievalServiceImpl.claimsForDate(date, originTag);
+            when(databaseClaimService.claims(ORIGIN_TAG, DATE)).thenReturn(claims);
+        retrievedClaims = claimRetrievalServiceImpl.claimsForDate(DATE, ORIGIN_TAG);
         thenClaimSummaryShouldBe();
     }
 
     @Test
     public void testClaim() throws Exception {
-        when(databaseClaimService.fullClaim(transactionId, originTag)).thenReturn("<xml>test</xml>");
-        assertThat(claimRetrievalServiceImpl.claim(transactionId, originTag), is("<xml>test</xml>"));
+        when(databaseClaimService.fullClaim(transactionId, ORIGIN_TAG)).thenReturn("<xml>test</xml>");
+        assertThat(claimRetrievalServiceImpl.claim(transactionId, ORIGIN_TAG), is("<xml>test</xml>"));
     }
 
     @Test
     public void testCircs() throws Exception {
-        claims = TestUtils.createClaims("circs", dateTime);
+        claims = TestUtils.createClaims("circs", DATETIME);
         when(dfStatuses.getDfStatuses(claims)).thenReturn(claims);
-        when(databaseClaimService.circs(originTag, date)).thenReturn(claims);
-        retrievedClaims = claimRetrievalServiceImpl.circs(date, originTag);
+        when(databaseClaimService.circs(ORIGIN_TAG, DATE)).thenReturn(claims);
+        retrievedClaims = claimRetrievalServiceImpl.circs(DATE, ORIGIN_TAG);
         thenClaimSummaryShouldBe();
     }
 
     @Test
     public void testClaimsForDateFiltered() throws Exception {
         when(dfStatuses.getDfStatuses(claims)).thenReturn(claims);
-        when(databaseClaimService.claimsFiltered(originTag, date, "received")).thenReturn(claims);
-        retrievedClaims = claimRetrievalServiceImpl.claimsForDateFiltered(date, "received", originTag);
+        when(databaseClaimService.claimsFiltered(ORIGIN_TAG, DATE, "received")).thenReturn(claims);
+        retrievedClaims = claimRetrievalServiceImpl.claimsForDateFiltered(DATE, "received", ORIGIN_TAG);
         thenClaimSummaryShouldBe();
     }
 
     @Test
     public void testClaimsForDateFilteredBySurname() throws Exception {
         when(dfStatuses.getDfStatuses(claims)).thenReturn(claims);
-        when(databaseClaimService.claimsFilteredBySurname(originTag, date, "atoz")).thenReturn(claims);
-        retrievedClaims = claimRetrievalServiceImpl.claimsForDateFilteredBySurname(date, "atoz", originTag);
+        when(databaseClaimService.claimsFilteredBySurname(ORIGIN_TAG, DATE, "atoz")).thenReturn(claims);
+        retrievedClaims = claimRetrievalServiceImpl.claimsForDateFilteredBySurname(DATE, "atoz", ORIGIN_TAG);
         thenClaimSummaryShouldBe();
     }
 
     @Test
     public void testClaimsNumbersFiltered() throws Exception {
-        Map<String, Long> claimNumbersFiltered = TestUtils.getClaimNumbersFiltered();
-        when(databaseClaimService.claimNumbersFiltered(originTag, Arrays.asList("received"))).thenReturn(claimNumbersFiltered);
-        Map<String, Long> data = claimRetrievalServiceImpl.claimsNumbersFiltered("received", originTag);
-        assertThat(data.get(date), is(1L));
+        final Map<String, Long> claimNumbersFiltered = TestUtils.getClaimNumbersFiltered();
+        when(databaseClaimService.claimNumbersFiltered(ORIGIN_TAG, Arrays.asList("received"))).thenReturn(claimNumbersFiltered);
+        final Map<String, Long> data = claimRetrievalServiceImpl.claimsNumbersFiltered("received", ORIGIN_TAG);
+        assertThat(data.get(DATE), is(1L));
     }
 
     @Test
     public void testCountOfClaimsForTabs() throws Exception {
-        Map<String, TabCount> counts = TestUtils.getTabCounts();
-        when(databaseClaimService.constructClaimSummaryWithTabTotals(originTag, date)).thenReturn(counts);
-        Map<String, TabCount> data = claimRetrievalServiceImpl.countOfClaimsForTabs(date, originTag);
+        final Map<String, TabCount> counts = TestUtils.getTabCounts();
+        when(databaseClaimService.constructClaimSummaryWithTabTotals(ORIGIN_TAG, DATE)).thenReturn(counts);
+        final Map<String, TabCount> data = claimRetrievalServiceImpl.countOfClaimsForTabs(DATE, ORIGIN_TAG);
         org.assertj.core.api.Assertions.assertThat(data.get("counts")).isEqualToComparingFieldByField(counts.get("counts"));
     }
 
     @Test
     public void testRender() throws Exception {
-        when(databaseClaimService.fullClaim(transactionId, originTag)).thenReturn("<xml>test</xml>");
-        String xml = claimRetrievalServiceImpl.render(transactionId, originTag);
+        when(databaseClaimService.fullClaim(transactionId, ORIGIN_TAG)).thenReturn("<xml>test</xml>");
+        final String xml = claimRetrievalServiceImpl.render(transactionId, ORIGIN_TAG);
         assertThat(xml, is("<xml>test</xml>"));
     }
 
     @Test
     public void testExport() throws Exception {
-        List<List<String>> summary = TestUtils.getSummaryValues(dateTime);
-        when(databaseClaimService.export(originTag)).thenReturn(summary);
-        org.assertj.core.api.Assertions.assertThat(claimRetrievalServiceImpl.export(originTag)).containsOnlyElementsOf(summary);
+        final List<List<String>> summary = TestUtils.getSummaryValues(DATETIME);
+        when(databaseClaimService.export(ORIGIN_TAG)).thenReturn(summary);
+        org.assertj.core.api.Assertions.assertThat(claimRetrievalServiceImpl.export(ORIGIN_TAG)).containsOnlyElementsOf(summary);
     }
 
     private void thenClaimSummaryShouldBe() {
