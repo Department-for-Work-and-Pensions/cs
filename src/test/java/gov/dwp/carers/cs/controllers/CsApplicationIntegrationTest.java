@@ -20,6 +20,7 @@ public class CsApplicationIntegrationTest extends AbstractCsApplicationIntegrati
     private static final String ORIGIN_TAG = "GB";
     private static final String STATUS = "received";
     private static final String DRS_STATUS = "1";
+
     @Test
     public void testClaimsForDate() throws Exception {
         givenMessageHasArrived(TestMessage.ValidXMLWithRSASignature.getFileName(), TestMessage.ValidXMLWithRSASignature.getTransactionId());
@@ -138,5 +139,15 @@ public class CsApplicationIntegrationTest extends AbstractCsApplicationIntegrati
         insertClaimSummary(ORIGIN_TAG, "completed", "010820160909", "claim");
         final String result = postMessage("/purge/" + ORIGIN_TAG);
         thenResultShouldBe(result, "Success");
+    }
+
+    @Test
+    public void testClaimForDateFails() throws Exception {
+        givenMessageHasArrived(TestMessage.ValidXMLWithRSASignature.getFileName(), TestMessage.ValidXMLWithRSASignature.getTransactionId());
+        insertClaimSummary(ORIGIN_TAG, STATUS, null, "claim");
+        whenDfServerReturnsError("/statuses", HttpStatus.INTERNAL_SERVER_ERROR);
+        final String result = getMessage("/claims/" + date + "/" + ORIGIN_TAG);
+        thenMessageSent();
+        assertThat(result, containsString("status\":500,\"error\":\"Internal Server Error\""));
     }
 }
