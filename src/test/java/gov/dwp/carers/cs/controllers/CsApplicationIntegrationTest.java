@@ -28,7 +28,7 @@ public class CsApplicationIntegrationTest extends AbstractCsApplicationIntegrati
         whenDfServerReturns("[{\"id\":\"" + transactionId + "\",\"desc\":\"" + DRS_STATUS + "\"}]", mediaType);
         final String result = getMessage("/claims/" + date + "/" + ORIGIN_TAG);
         thenMessageSent();
-        thenResultShouldBe(result, "[{\"transactionId\":\"16070000241\",\"claimType\":\"claim\",\"nino\":\"AB123456B\",\"forename\":\"fred\",\"surname\":\"bieber\",\"claimDateTime\":" + TestUtils.getSimpleDateFormat().parse(dateTime).getTime() + ",\"STATUS\":\"" + STATUS + "\",\"DRS_STATUS\":\"" + DRS_STATUS + "\"}]");
+        thenResultShouldBe(result, "[{\"transactionId\":\"16070000241\",\"claimType\":\"claim\",\"nino\":\"AB123456B\",\"forename\":\"fred\",\"surname\":\"bieber\",\"claimDateTime\":" + TestUtils.getSimpleDateFormat().parse(dateTime).getTime() + ",\"status\":\"" + STATUS + "\",\"drsStatus\":\"" + DRS_STATUS + "\"}]");
     }
 
     @Test
@@ -48,7 +48,7 @@ public class CsApplicationIntegrationTest extends AbstractCsApplicationIntegrati
         whenDfServerReturns("[{\"id\":\"" + transactionId + "\",\"desc\":\"" + DRS_STATUS + "\"}]", mediaType);
         final String result = getMessage("/circs/" + date + "/" + ORIGIN_TAG);
         thenMessageSent();
-        thenResultShouldBe(result, "[{\"transactionId\":\"16070000241\",\"claimType\":\"circs\",\"nino\":\"AB123456B\",\"forename\":\"fred\",\"surname\":\"bieber\",\"claimDateTime\":" + TestUtils.getSimpleDateFormat().parse(dateTime).getTime() + ",\"STATUS\":\"" + STATUS + "\",\"DRS_STATUS\":\"" + DRS_STATUS + "\"}]");
+        thenResultShouldBe(result, "[{\"transactionId\":\"16070000241\",\"claimType\":\"circs\",\"nino\":\"AB123456B\",\"forename\":\"fred\",\"surname\":\"bieber\",\"claimDateTime\":" + TestUtils.getSimpleDateFormat().parse(dateTime).getTime() + ",\"status\":\"" + STATUS + "\",\"drsStatus\":\"" + DRS_STATUS + "\"}]");
     }
 
     @Test
@@ -59,7 +59,7 @@ public class CsApplicationIntegrationTest extends AbstractCsApplicationIntegrati
         whenDfServerReturns("[{\"id\":\"" + transactionId + "\",\"desc\":\"" + DRS_STATUS + "\"}]", mediaType);
         final String result = getMessage("/claims/" + date + "/" + STATUS + "/" + ORIGIN_TAG);
         thenMessageSent();
-        thenResultShouldBe(result, "[{\"transactionId\":\"16070000241\",\"claimType\":\"claim\",\"nino\":\"AB123456B\",\"forename\":\"fred\",\"surname\":\"bieber\",\"claimDateTime\":" + TestUtils.getSimpleDateFormat().parse(dateTime).getTime() + ",\"STATUS\":\"received\",\"DRS_STATUS\":\"" + DRS_STATUS + "\"}]");
+        thenResultShouldBe(result, "[{\"transactionId\":\"16070000241\",\"claimType\":\"claim\",\"nino\":\"AB123456B\",\"forename\":\"fred\",\"surname\":\"bieber\",\"claimDateTime\":" + TestUtils.getSimpleDateFormat().parse(dateTime).getTime() + ",\"status\":\"received\",\"drsStatus\":\"" + DRS_STATUS + "\"}]");
     }
 
     @Test
@@ -70,7 +70,7 @@ public class CsApplicationIntegrationTest extends AbstractCsApplicationIntegrati
         final MediaType mediaType = new MediaType("application", "json", StandardCharsets.UTF_8);
         whenDfServerReturns("[{\"id\":\"" + transactionId + "\",\"desc\":\"" + DRS_STATUS + "\"}]", mediaType);
         final String result = getMessage("/claims/surname/" + date + "/" + sortBy + "/" + ORIGIN_TAG);
-        thenResultShouldBe(result, "[{\"transactionId\":\"16070000241\",\"claimType\":\"claim\",\"nino\":\"AB123456B\",\"forename\":\"fred\",\"surname\":\"bieber\",\"claimDateTime\":" + TestUtils.getSimpleDateFormat().parse(dateTime).getTime() + ",\"STATUS\":\"received\",\"DRS_STATUS\":\"" + DRS_STATUS + "\"}]");
+        thenResultShouldBe(result, "[{\"transactionId\":\"16070000241\",\"claimType\":\"claim\",\"nino\":\"AB123456B\",\"forename\":\"fred\",\"surname\":\"bieber\",\"claimDateTime\":" + TestUtils.getSimpleDateFormat().parse(dateTime).getTime() + ",\"status\":\"received\",\"drsStatus\":\"" + DRS_STATUS + "\"}]");
     }
 
     @Test
