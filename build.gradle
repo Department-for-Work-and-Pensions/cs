@@ -82,8 +82,8 @@ configurations.all {
 }
 
 dependencies {
-    compile("gov.dwp.carers:xmlcommons:8.19-SNAPSHOT")
-    compile("gov.dwp.carers:carerscommon:8.04-SNAPSHOT")
+    compile("gov.dwp.carers:xmlcommons:8.22-SNAPSHOT")
+    compile("gov.dwp.carers:carerscommon:8.05-SNAPSHOT")
     compile("com.zaxxer:HikariCP")
     compile("org.springframework.boot:spring-boot-starter-jetty")
     compile("org.springframework.boot:spring-boot-starter-data-rest")

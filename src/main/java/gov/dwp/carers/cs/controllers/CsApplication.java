@@ -8,7 +8,6 @@ import gov.dwp.carers.cs.service.database.DatabasePurgeServiceImpl;
 import gov.dwp.carers.monitor.MonitorRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,7 +19,6 @@ import org.springframework.context.annotation.PropertySource;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
@@ -46,18 +44,8 @@ public class CsApplication {
 
     @PostConstruct
     public void onStart() throws Exception {
-        try {
-            if (LOGGER.isInfoEnabled()) {
-                LOGGER.info("Starting application with - serverPort:" + serverPort + " envName:" + envName + " appName:" + appName);
-            }
-            MDC.put("httpPort", serverPort);
-            MDC.put("hostName", InetAddress.getLocalHost().getHostName());
-            MDC.put("envName", envName);
-            MDC.put("appName", appName);
-        } catch (Exception e) {
-            LOGGER.error("Failed to initialise MDC " + e.getMessage(), e);
-        }
         if (LOGGER.isInfoEnabled()) {
+            LOGGER.info("Starting application with - serverPort:" + serverPort + " envName:" + envName + " appName:" + appName);
             LOGGER.info(appName + " is now starting.");
         }
 
