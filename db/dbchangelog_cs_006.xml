@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.2.xsd">
+        <changeSet author="pwhitehead" id="tag_cs_006_1">
+                <tagDatabase tag="cs_006_1"/>
+        </changeSet>
+        <changeSet author="pwhitehead" id="cs_006_1">
+                <modifyDataType columnName="claimxml" newDataType="text" schemaName="carers" tableName="claim"/>
+                <rollback>
+                        <modifyDataType columnName="claimxml" newDataType="CHARACTER VARYING(50000)" schemaName="carers" tableName="claim"/>
+                </rollback>
+        </changeSet>
+</databaseChangeLog>
