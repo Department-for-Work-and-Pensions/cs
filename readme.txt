@@ -1,1 +1,1 @@
-initial project
+Creation of java claim service
