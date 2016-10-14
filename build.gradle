@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '1.4.0.RELEASE'
+        springBootVersion = '1.4.1.RELEASE'
     }
     repositories {
         jcenter()
@@ -14,7 +14,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath(group: 'org.jfrog.buildinfo', name: 'build-info-extractor-gradle', version: '4.0.0')
+        classpath(group: 'org.jfrog.buildinfo', name: 'build-info-extractor-gradle', version: '4.4.0')
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
     }
 }
@@ -83,7 +83,7 @@ configurations.all {
 
 dependencies {
     compile("gov.dwp.carers:xmlcommons:8.22-SNAPSHOT")
-    compile("gov.dwp.carers:carerscommon:8.05-SNAPSHOT")
+    compile("gov.dwp.carers:carerscommon:8.06-SNAPSHOT")
     compile("com.zaxxer:HikariCP")
     compile("org.springframework.boot:spring-boot-starter-jetty")
     compile("org.springframework.boot:spring-boot-starter-data-rest")
@@ -96,8 +96,7 @@ dependencies {
     compile("org.postgresql:postgresql")
     runtime("me.moocar:logback-gelf:0.3")
     testCompile (
-            'org.springframework.boot:spring-boot-starter-test',
-            'org.assertj:assertj-core:3.5.2'
+            'org.springframework.boot:spring-boot-starter-test'
     )
     testCompile("gov.dwp.carers:testcommons:1.01-SNAPSHOT")
 }
