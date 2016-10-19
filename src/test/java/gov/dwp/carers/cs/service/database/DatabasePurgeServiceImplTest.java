@@ -31,7 +31,7 @@ public class DatabasePurgeServiceImplTest {
 
     @Before
     public void setUp() throws Exception {
-        dataSource = new EmbeddedPostgresDB().dataSource();
+        dataSource = new EmbeddedPostgresDB("cs/").dataSource();
         jdbcTemplate = new JdbcTemplate(dataSource);
         databasePurgeServiceImpl = new DatabasePurgeServiceImpl(jdbcTemplate, 8);
         dateTimeFormatter = DateTimeFormatter.ofPattern("ddMMyyyyHHmm");

@@ -98,7 +98,7 @@ dependencies {
     testCompile (
             'org.springframework.boot:spring-boot-starter-test'
     )
-    testCompile("gov.dwp.carers:testcommons:1.01-SNAPSHOT")
+    testCompile("gov.dwp.carers:testcommons:1.02-SNAPSHOT")
 }
 
 //Use this for publishing to local Maven repo

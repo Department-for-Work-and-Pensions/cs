@@ -64,7 +64,7 @@ public class DatabaseClaimServiceImplTest {
     @Before
     public void setUp() throws Exception {
         transactionId = "1610000234";
-        dataSource = new EmbeddedPostgresDB().dataSource();
+        dataSource = new EmbeddedPostgresDB("cs/").dataSource();
         jdbcTemplate = new JdbcTemplate(dataSource);
         databaseClaimServiceImpl = new DatabaseClaimServiceImpl(jdbcTemplate, transactionManager,
                 new ClaimServiceHelper(new XmlSchemaDecryptor(), new XMLExtractor()), counters, CLAIM_METRIC, CLAIM_SUMMARY_METRIC);
