@@ -4,6 +4,7 @@ import gov.dwp.carers.security.encryption.EncryptorAES;
 import gov.dwp.carers.xml.helpers.XMLExtractor;
 import gov.dwp.carers.xml.helpers.XmlSchemaDecryptor;
 import gov.dwp.exceptions.DwpRuntimeException;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -37,7 +38,10 @@ public class ClaimServiceHelper {
     public String getSurname(final Document doc, final String claimType) {
         String surname = xmlExtractor.getTextFromXmlNode(doc, "DWPCATransaction", Arrays.asList("DWPCATransaction","DWPCAClaim","Claimant","Surname","Answer"));
         if ("circs".equals(claimType)) {
-            surname = "";
+            surname = xmlExtractor.getTextFromXmlNode(doc, "DWPCATransaction", Arrays.asList("DWPCATransaction", "DWPCAChangeOfCircumstances", "ClaimantDetails", "Surname", "Answer"));
+            if (surname == null) {
+                surname = "";
+            }
         }
         return surname;
     }
@@ -45,7 +49,10 @@ public class ClaimServiceHelper {
     public String getForename(final Document doc, final String claimType) {
         String forename = xmlExtractor.getTextFromXmlNode(doc, "DWPCATransaction", Arrays.asList("DWPCATransaction","DWPCAClaim","Claimant","OtherNames","Answer"));
         if ("circs".equals(claimType)) {
-            forename = xmlExtractor.getTextFromXmlNode(doc, "DWPCATransaction", Arrays.asList("DWPCATransaction", "DWPCAChangeOfCircumstances", "ClaimantDetails", "FullName", "Answer"));
+            forename = xmlExtractor.getTextFromXmlNode(doc, "DWPCATransaction", Arrays.asList("DWPCATransaction", "DWPCAChangeOfCircumstances", "ClaimantDetails", "OtherNames", "Answer"));
+            if (StringUtils.isEmpty(forename)) {
+                forename = xmlExtractor.getTextFromXmlNode(doc, "DWPCATransaction", Arrays.asList("DWPCATransaction", "DWPCAChangeOfCircumstances", "ClaimantDetails", "FullName", "Answer"));
+            }
         }
         return forename;
     }
