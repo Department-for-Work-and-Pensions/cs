@@ -8,4 +8,5 @@
  <include relativeToChangelogFile="true" file="dbchangelog_cs_005.sql"/>
  <include relativeToChangelogFile="true" file="dbchangelog_cs_006.xml"/>
  <include relativeToChangelogFile="true" file="dbchangelog_cs_007.xml"/>
+ <include relativeToChangelogFile="true" file="dbchangelog_cs_008.xml"/>
 </databaseChangeLog>
