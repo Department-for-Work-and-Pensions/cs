@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.2.xsd">
+    <changeSet author="cgreenwood" id="tag_cs_009_1">
+        <tagDatabase tag="cs_009_1"/>
+    </changeSet>
+    <changeSet author="cgreenwood" id="cs_009_1">
+        <comment>Create reports table</comment>
+        <createTable schemaName="carers" tableName="reports">
+            <column name="id" type="varchar(11)"/>
+            <column name="group_id" type="varchar(1)"/>
+            <column name="start_transaction_id" type="varchar(11)"/>
+            <column name="end_transaction_id" type="varchar(11)"/>
+            <column name="timestamp" type="timestamp"/>
+        </createTable>
+        <addPrimaryKey schemaName="carers" tableName="reports" columnNames="id"/>
+        <addNotNullConstraint schemaName="carers" tableName="reports" columnName="group_id"/>
+        <addNotNullConstraint schemaName="carers" tableName="reports" columnName="start_transaction_id"/>
+        <addNotNullConstraint schemaName="carers" tableName="reports" columnName="end_transaction_id"/>
+        <addNotNullConstraint schemaName="carers" tableName="reports" columnName="timestamp"/>
+        <sql>
+            GRANT SELECT,INSERT,UPDATE,DELETE ON carers.reports to carersserviceuser;
+        </sql>
+        <rollback>
+            <dropTable schemaName="carers" tableName="reports"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
+

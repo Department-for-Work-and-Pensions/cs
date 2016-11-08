@@ -9,4 +9,5 @@
  <include relativeToChangelogFile="true" file="dbchangelog_cs_006.xml"/>
  <include relativeToChangelogFile="true" file="dbchangelog_cs_007.xml"/>
  <include relativeToChangelogFile="true" file="dbchangelog_cs_008.xml"/>
+ <include relativeToChangelogFile="true" file="dbchangelog_cs_009.xml"/>
 </databaseChangeLog>
