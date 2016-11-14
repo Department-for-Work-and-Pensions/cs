@@ -32,6 +32,9 @@ public class DatabaseClaimServiceImpl implements DatabaseClaimService {
     private final String claimMetric;
     private final String claimSummaryMetric;
 
+    private final String SACONSTANT_CIRCS="circs";
+    private final String SACONSTANT_CLAIM="claim";
+
     @Inject
     public DatabaseClaimServiceImpl(final JdbcTemplate jdbcTemplate,
                                     final PlatformTransactionManager transactionManager,
@@ -136,7 +139,12 @@ public class DatabaseClaimServiceImpl implements DatabaseClaimService {
                 "WHERE c.value SIMILAR TO ''" + surnames + "'' " +
                 "AND length(c.value)>0 " +
                 "AND c.key = ''" + ClaimServiceHelper.SORT_KEY + "'' " +
-                "AND c.origintag = ''" + originTag + "'') " +
+                "AND c.origintag = ''" + originTag + "'' " +
+                "INTERSECT SELECT ct.transId as transactionId " +
+                "FROM carers.claimsummary ct " +
+                "WHERE ct.key=''" + ClaimServiceHelper.CLAIM_TYPE_KEY + "'' " +
+                "AND ct.value=''" + SACONSTANT_CLAIM + "'' " +
+                "AND ct.origintag = ''" + originTag + "'') " +
                 "ORDER BY transactionId ASC'," +
                 "'SELECT DISTINCT key FROM carers.claimsummary ORDER BY 1'" +
                 ") AS " +
@@ -266,14 +274,15 @@ public class DatabaseClaimServiceImpl implements DatabaseClaimService {
     private Long countOfClaimsForTab(final String originTag, final String dateString, final String sortBy) {
         //1) CLAIM_DATETIME_KEY 2) originTag 3) date 4) STATUS_KEY 5) originTag 6) SORT_KEY 7) originTag 8) sortBy
         final String sql = "SELECT COALESCE(count(c1.*),'0') as tabsCount " +
-                "FROM carers.claimsummary c1,carers.claimsummary c2,carers.claimsummary c3 " +
+                "FROM carers.claimsummary c1,carers.claimsummary c2,carers.claimsummary c3,carers.claimsummary c4 " +
                 "WHERE c1.key = ? AND c1.origintag = ? AND LEFT(c1.value,8) = ? " +
                 "AND c1.transId = c2.transId AND c2.key = ? AND c2.origintag = ? AND c2.value != 'completed' " +
                 "AND c2.transId = c3.transId AND c3.key = ? AND c3.origintag = ? AND c3.value SIMILAR TO ? " +
+                "AND c3.transId = c4.transId AND c4.key = ? AND c4.origintag = ? AND c4.value = '" + SACONSTANT_CLAIM + "' " +
                 "AND length(c3.value) > 0 GROUP BY LEFT(c1.value,8)";
         return jdbcTemplate.query(sql, resultSet -> resultSet.next() ? resultSet.getLong("tabsCount") : 0L,
                 ClaimServiceHelper.CLAIM_DATETIME_KEY, originTag, dateString, ClaimServiceHelper.STATUS_KEY,
-                originTag, ClaimServiceHelper.SORT_KEY, originTag, sortBy);
+                originTag, ClaimServiceHelper.SORT_KEY, originTag, sortBy, ClaimServiceHelper.CLAIM_TYPE_KEY, originTag);
     }
 
     private Long countOfCircsForTab(final String originTag, final String dateString) {
@@ -282,10 +291,11 @@ public class DatabaseClaimServiceImpl implements DatabaseClaimService {
                 "FROM carers.claimsummary c1,carers.claimsummary c2,carers.claimsummary c3 " +
                 "WHERE c1.key = ? AND c1.origintag = ? AND LEFT(c1.value,8) = ? " +
                 "AND c1.transId = c2.transId AND c2.key = ? AND c2.origintag = ? AND c2.value != 'completed' " +
-                "AND c2.transId = c3.transId AND c3.key = ? AND c3.value='circs' AND c3.origintag = ? GROUP BY LEFT(c1.value,8)";
+                "AND c2.transId = c3.transId AND c3.key = ? AND c3.origintag = ? AND c3.value='" + SACONSTANT_CIRCS + "' " +
+                "GROUP BY LEFT(c1.value,8)";
         return jdbcTemplate.query(sql, resultSet -> resultSet.next() ? resultSet.getLong("tabsCount") : 0L,
-                ClaimServiceHelper.CLAIM_DATETIME_KEY, originTag, dateString, ClaimServiceHelper.CLAIM_TYPE_KEY,
-                originTag, ClaimServiceHelper.SORT_KEY, originTag);
+                ClaimServiceHelper.CLAIM_DATETIME_KEY, originTag, dateString, ClaimServiceHelper.STATUS_KEY,
+                originTag, ClaimServiceHelper.CLAIM_TYPE_KEY, originTag);
     }
 
     @Override
