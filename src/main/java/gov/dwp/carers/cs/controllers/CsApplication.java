@@ -63,14 +63,14 @@ public class CsApplication {
     private void registerHealthChecks(final DrConnectionCheck drConnectionCheck,
                                       final DfConnectionCheck dfConnectionCheck,
                                       final DBHealthCheck dbHealthCheck) {
-        LOGGER.info(appName + "{} - registering health checks.", appName);
+        LOGGER.info("{} - registering health checks.", appName);
         monitorRegistration.registerHealthChecks(Arrays.asList(drConnectionCheck, dfConnectionCheck, dbHealthCheck));
     }
 
     @Inject
     private void startPurgeDatabaseSchedule(final DatabasePurgeServiceImpl databasePurgeServiceImpl,
                                             @Value("${database.purge.scheduler.hours}") final Long databasePurgeSchedulerHours) {
-        LOGGER.info(appName + "{} - starting purge database scheduler to run every {} hours.", appName, databasePurgeSchedulerHours);
+        LOGGER.info("{} - starting purge database scheduler to run every {} hours.", appName, databasePurgeSchedulerHours);
         this.carersScheduler = new CarersScheduler(appName, "purge-database", databasePurgeServiceImpl);
         this.carersScheduler.start(databasePurgeSchedulerHours, TimeUnit.HOURS);
     }
