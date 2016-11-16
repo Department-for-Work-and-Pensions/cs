@@ -56,7 +56,7 @@ public class HealthControllerTest {
     }
 
     private void whenRunningHealthReportsThrow() throws IOException {
-        when(monitorRegistration.retrievePrintFriendlyHealthCheck()).thenThrow(new NullPointerException("null"));
+        when(monitorRegistration.retrievePrintFriendlyHealthCheck()).thenThrow(new IOException("null"));
     }
 
     private void thenHealthReportShouldContain(final String result) {
