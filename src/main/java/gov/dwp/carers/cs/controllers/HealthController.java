@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
+import java.io.IOException;
 
 @RestController
 @Component
@@ -21,22 +22,30 @@ public class HealthController {
     private static final String ERROR = "Failed health check.";
 
     @RequestMapping(value = "/ping", method = RequestMethod.GET)
-    public @ResponseBody String ping() {
+    public
+    @ResponseBody
+    String ping() {
+        LOGGER.info("STARTED /ping HealthController.ping");
+        LOGGER.info("ENDED /ping HealthController.ping");
         return "";
     }
 
     @RequestMapping(value = "/report/health", method = RequestMethod.GET)
-    public @ResponseBody String health() {
-        String msg = ERROR;
+    @ResponseBody
+    public String health() {
+        LOGGER.info("STARTED /report/health HealthController.health");
+        String response = ERROR;
         try {
             final String health = monitorRegistration.retrievePrintFriendlyHealthCheck();
-            if (health !=  null) {
-                msg = health;
+            if (health != null) {
+                response = health;
             }
-        } catch (Exception e) {
-            LOGGER.error(ERROR, e);
+        } catch (IOException e) {
+            LOGGER.error("Failed to report health.", e);
+        } finally {
+            LOGGER.info("ENDED /report/health HealthController.health");
         }
-        return msg;
+        return response;
     }
 
     @Inject
