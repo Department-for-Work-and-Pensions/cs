@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.2.xsd">
+    <changeSet author="cgreenwood" id="tag_cs_008_1">
+        <tagDatabase tag="cs_008_1"/>
+    </changeSet>
+    <changeSet author="cgreenwood" id="cs_008_1">
+        <comment>Create claim summary view to bring multiple rows per claim into pseudo single row
+                We use a crosstab to do a pivot on multiple rows with key=surname value=green into a single row with column of surname=green.
+                So we need the psql table functions installed/enabled which can be done by previous liquibase script ... "CREATE extension tablefunc;"
+        </comment>
+        <createView replaceIfExists="true" schemaName="carers" viewName="claimsummaryview">
+            SELECT *
+            FROM crosstab(
+            'select transId, key, value
+            from carers.claimsummary
+            where key = ''claimDateTime'' OR key=''claimType'' or key=''forename'' or key=''nino'' or key=''status'' or key=''surname''
+            ORDER BY 1,2')
+            AS ct(transactionId varchar, claimDateTime varchar, claimType varchar, forename varchar, nino varchar, status varchar, surname varchar);
+        </createView>
+        <sql>
+            GRANT SELECT ON carers.claimsummaryview to carersserviceuser;
+        </sql>
+        <rollback>
+            <dropView schemaName="carers" viewName="claimsummaryview"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
+
+

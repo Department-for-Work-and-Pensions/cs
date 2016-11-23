@@ -96,7 +96,7 @@ public class DatabaseClaimServiceImplTest {
 
     @Test
     public void testClaimsFilteredBySurname() throws Exception {
-        givenMessageHasBeenReceived("received", "circs", null);
+        givenMessageHasBeenReceived("received", "claim", null);
         whenClaimsFilteredBySurnameCalled();
         thenClaimSummaryShouldBe();
     }
