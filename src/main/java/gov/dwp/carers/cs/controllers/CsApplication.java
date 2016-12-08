@@ -44,41 +44,33 @@ public class CsApplication {
 
     @PostConstruct
     public void onStart() throws Exception {
-        if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("Starting application with - serverPort:" + serverPort + " envName:" + envName + " appName:" + appName);
-            LOGGER.info(appName + " is now starting.");
-        }
-
+        LOGGER.info("STARTING application with - serverPort:{} envName:{} appName:{}", serverPort, envName, appName);
+        LOGGER.info("{} is now STARTING.", appName);
         monitorRegistration.registerReporters();
-
-        if (LOGGER.isInfoEnabled()) {
-            LOGGER.info(appName + " started.");
-        }
+        LOGGER.info("{} STARTED.", appName);
     }
 
     @PreDestroy
     public void onStop() {
+        LOGGER.info("STOPPING application with - serverPort:{} envName:{} appName:{}", serverPort, envName, appName);
         monitorRegistration.unRegisterReporters();
         monitorRegistration.unRegisterHealthChecks();
         carersScheduler.stop();
+        LOGGER.info("{} STOPPED.", appName);
     }
 
     @Inject
     private void registerHealthChecks(final DrConnectionCheck drConnectionCheck,
                                       final DfConnectionCheck dfConnectionCheck,
                                       final DBHealthCheck dbHealthCheck) {
-        if (LOGGER.isInfoEnabled()) {
-            LOGGER.info(appName + " - registering health checks.");
-        }
+        LOGGER.info("{} - registering health checks.", appName);
         monitorRegistration.registerHealthChecks(Arrays.asList(drConnectionCheck, dfConnectionCheck, dbHealthCheck));
     }
 
     @Inject
     private void startPurgeDatabaseSchedule(final DatabasePurgeServiceImpl databasePurgeServiceImpl,
                                             @Value("${database.purge.scheduler.hours}") final Long databasePurgeSchedulerHours) {
-        if (LOGGER.isInfoEnabled()) {
-            LOGGER.info(appName + " - starting purge database scheduler.");
-        }
+        LOGGER.info("{} - starting purge database scheduler to run every {} hours.", appName, databasePurgeSchedulerHours);
         this.carersScheduler = new CarersScheduler(appName, "purge-database", databasePurgeServiceImpl);
         this.carersScheduler.start(databasePurgeSchedulerHours, TimeUnit.HOURS);
     }
