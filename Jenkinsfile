@@ -31,6 +31,7 @@ node ('master') {
                 publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: true, reportDir: 'build/reports/tests/test/', reportFiles: 'index.html', reportName: 'Test Report'])
                 throw e;
             }
+        }
     }
     stage ('Publish build info') {
         server.publishBuildInfo buildInfo
