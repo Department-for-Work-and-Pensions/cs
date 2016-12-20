@@ -7,7 +7,6 @@ node ('master') {
     artifactoryGradle.deployer.ivyPattern = '[organisation]/[module]/ivy-[revision].xml'
     artifactoryGradle.deployer.artifactPattern = '[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]'
     artifactoryGradle.deployer.mavenCompatible = true
-    artifactoryGradle.deployer.artifactDeploymentPatterns.addInclude("*.zip,*.jar")
     artifactoryGradle.deployer.usesPlugin = true
 
     def buildInfo = Artifactory.newBuildInfo()
@@ -23,14 +22,16 @@ node ('master') {
         checkout scm
     }
     stage ('Build') {
-        withEnv(['_JAVA_OPTIONS=-Dcarers.keystore=/opt/carers-keystore/carerskeystore']) {
-            try {
+        try {
+            withEnv(['_JAVA_OPTIONS=-Dcarers.keystore=/opt/carers-keystore/carerskeystore']) {
                 artifactoryGradle.run switches: '-Dgradle.user.home=$JENKINS_HOME/.gradle', buildFile: 'build.gradle', tasks: 'clean test build sourcesJar zipDatabase artifactoryPublish', buildInfo: buildInfo, server: server
-                publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: true, reportDir: 'build/reports/tests/test/', reportFiles: 'index.html', reportName: 'Test Report'])
-            } catch (Exception e) {
-                publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: true, reportDir: 'build/reports/tests/test/', reportFiles: 'index.html', reportName: 'Test Report'])
-                throw e;
             }
+            publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: true, reportDir: 'build/reports/tests/test/', reportFiles: 'index.html', reportName: 'Test Report'])
+            junit keepLongStdio: true, testResults: 'build/test-results/test/*.xml'
+        } catch (Exception e) {
+            publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: true, reportDir: 'build/reports/tests/test/', reportFiles: 'index.html', reportName: 'Test Report'])
+            junit allowEmptyResults: true, keepLongStdio: true, testResults: 'build/test-results/test/*.xml'
+            throw e;
         }
     }
     stage ('Publish build info') {
