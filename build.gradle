@@ -20,6 +20,8 @@ buildscript {
     }
 }
 
+String snapshot = "$System.env.BRANCH_NAME".contentEquals('int-release') ? 'RELEASE' : 'SNAPSHOT'
+
 allprojects {
     apply plugin: 'com.jfrog.artifactory'
     apply plugin: 'java'
@@ -27,7 +29,7 @@ allprojects {
     apply plugin: 'maven-publish'
     apply plugin: 'spring-boot'
     apply plugin: 'fpm-packaging'
-    version = '3.03-SNAPSHOT'
+    version = "3.03-${snapshot}"
     archivesBaseName = 'cs'
     group = 'gov.dwp.carers'
     sourceCompatibility = 1.8
