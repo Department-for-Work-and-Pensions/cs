@@ -3,6 +3,14 @@ node ('master') {
     def artifactoryGradle = Artifactory.newGradleBuild()
     artifactoryGradle.tool = 'Gradle321' // Tool name from Jenkins configuration
     artifactoryGradle.resolver repo:'repo', server: server
+
+    if (env.BRANCH_NAME == 'integration') {
+        artifactoryGradle.deployer repo:'libs-snapshot-local', server: server
+    }
+    if (env.BRANCH_NAME == 'int-release') {
+        artifactoryGradle.deployer repo:'libs-release-local', server: server
+    }
+
     artifactoryGradle.deployer.ivyPattern = '[organisation]/[module]/ivy-[revision].xml'
     artifactoryGradle.deployer.artifactPattern = '[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]'
     artifactoryGradle.deployer.mavenCompatible = true
@@ -16,12 +24,6 @@ node ('master') {
     def artifactoryMaven = Artifactory.newMavenBuild()
     artifactoryMaven.resolver releaseRepo:'repo', snapshotRepo:'repo', server: server
 
-    if (env.BRANCH_NAME == 'integration') {
-        artifactoryGradle.deployer repo:'libs-snapshot-local', server: server
-    }
-    if (env.BRANCH_NAME == 'int-release') {
-        artifactoryGradle.deployer repo:'libs-release-local', server: server
-    }
 
     stage ('Checkout') {
         checkout scm
