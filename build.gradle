@@ -14,10 +14,13 @@ buildscript {
         }
     }
     dependencies {
-        classpath(group: 'org.jfrog.buildinfo', name: 'build-info-extractor-gradle', version: '4.4.0')
+        classpath(group: 'org.jfrog.buildinfo', name: 'build-info-extractor-gradle', version: '4.4.9')
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath 'com.kenshoo:gradle-fpm:0.5'
     }
 }
+
+String candidate = "$System.env.BRANCH_NAME".contentEquals('int-release') ? 'RELEASE' : 'SNAPSHOT'
 
 allprojects {
     apply plugin: 'com.jfrog.artifactory'
@@ -25,7 +28,8 @@ allprojects {
     apply plugin: 'idea'
     apply plugin: 'maven-publish'
     apply plugin: 'spring-boot'
-    version = '3.03-SNAPSHOT'
+    apply plugin: 'fpm-packaging'
+    version = "3.03-${candidate}"
     archivesBaseName = 'cs'
     group = 'gov.dwp.carers'
     sourceCompatibility = 1.8
@@ -98,7 +102,7 @@ dependencies {
     testCompile (
             'org.springframework.boot:spring-boot-starter-test'
     )
-    testCompile("gov.dwp.carers:testcommons:1.02-SNAPSHOT")
+    testCompile("gov.dwp.carers:testcommons:1.09-SNAPSHOT")
 }
 
 //Use this for publishing to local Maven repo
@@ -124,6 +128,14 @@ publishing {
             }
         }
     }
+}
+
+rpm {
+    packageName = "${archivesBaseName}" // Optional, default is project.name
+    baseDir = "${project.buildDir}/build/libs" // Optional, base directory to package, default: project.buildDir
+    prefix = "/data/carers/${archivesBaseName}/${archivesBaseName}-${version}" // Optional, a path to prefix files when building package, default: root (/)
+    extraOptions = ['--vendor': 'DWP', '--maintainer': 'CADS Team'] // Optional, a map containing extra options
+    extraFlags   = ['--rpm-auto-add-directories'] // Optional, a list of additional flags to fpm
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
