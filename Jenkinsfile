@@ -61,7 +61,7 @@ node ('master') {
         sh "fpm -s dir -t rpm --name ${app_name}-${app_ver} --version ${env.BUILD_NUMBER} --prefix /data/carers/${app_name}/${app_name}-${app_ver} build/libs/${app_name}-${app_ver}-full.jar=/"
     }
     stage ('Build DB updates RedHat package') {
-        sh "fpm -s zip -t rpm --name ${app_name}-${app_ver}-db --version ${env.BUILD_NUMBER} --prefix /data/liquibase/${app_name} build/distributions/sa-${app_ver}-db.zip"
+        sh "fpm -s zip -t rpm --name ${app_name}-${app_ver}-db --version ${env.BUILD_NUMBER} --prefix /data/liquibase/${app_name} build/distributions/${app_name}-${app_ver}-db.zip"
     }
     if (env.BRANCH_NAME == 'integration') {
         stage ('Deploy to lab') {
