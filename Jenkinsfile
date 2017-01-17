@@ -28,7 +28,20 @@ node ('master') {
     stage ('Checkout') {
         checkout scm
     }
-    stage ('Build') {
+
+    def gradletool = tool name: 'Gradle321', type: 'hudson.plugins.gradle.GradleInstallation'
+    def gradlebin = "${gradletool}/bin/gradle -Dgradle.user.home=$JENKINS_HOME/.gradle"
+
+    def app_name = sh (
+        script: "${gradlebin} properties | grep name | awk '{print \$2}'",
+        returnStdout: true
+        ).trim()
+    def app_ver = sh (
+        script: "${gradlebin} properties | grep version | awk '{print \$2}'",
+        returnStdout: true
+        ).trim()
+
+    stage ('Gradle build and test') {
         try {
             withEnv(['_JAVA_OPTIONS=-Dcarers.keystore=/opt/carers-keystore/carerskeystore']) {
                 artifactoryGradle.run switches: '-Dgradle.user.home=$JENKINS_HOME/.gradle', buildFile: 'build.gradle', tasks: 'clean test build sourcesJar zipDatabase artifactoryPublish', buildInfo: buildInfo, server: server
@@ -41,8 +54,14 @@ node ('master') {
             throw e;
         }
     }
-    stage ('Publish build info') {
+    stage ('Publish Gradle build info') {
         server.publishBuildInfo buildInfo
+    }
+    stage ('Build service RedHat package') {
+        sh "fpm -s dir -t rpm --name ${app_name}-${app_ver} --version ${env.BUILD_NUMBER} --prefix /data/carers/${app_name}/${app_name}-${app_ver} build/libs/${app_name}-${app_ver}-full.jar=/"
+    }
+    stage ('Build DB updates RedHat package') {
+        sh "fpm -s zip -t rpm --name ${app_name}-${app_ver}-db --version ${env.BUILD_NUMBER} --prefix /data/liquibase/${app_name} build/distributions/sa-${app_ver}-db.zip"
     }
     if (env.BRANCH_NAME == 'integration') {
         stage ('Deploy to lab') {
@@ -51,11 +70,14 @@ node ('master') {
                 sh 'ssh cslab@37.26.89.94 "./deploy.sh restart > output.log 2>&1 &"'
             }
         }
+        stage ('Add RedHat package to Lab repo') {
+            sh 'cp *.rpm /opt/repo/cads/lab/'
+            build job: 'Update repository metadata', parameters: [string(name: 'REPO_NAME', value: 'lab')], wait: false
+        }
     }
     if (env.BRANCH_NAME == 'int-release') {
-        stage ('Build RPM') {
-            artifactoryGradle.run switches: '-Dgradle.user.home=$JENKINS_HOME/.gradle', buildFile: 'build.gradle', tasks: 'rpm', server: server
-            sh 'cp build/linux-package/*.rpm /opt/repo/cads/preview/'
+        stage ('Add RedHat package to Preview repo') {
+            sh 'cp *.rpm /opt/repo/cads/preview/'
             build job: 'Update repository metadata', parameters: [string(name: 'REPO_NAME', value: 'preview')], wait: false
         }
     }
