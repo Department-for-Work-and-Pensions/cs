@@ -20,7 +20,7 @@ buildscript {
     }
 }
 
-String candidate = "$System.env.BRANCH_NAME".contentEquals('int-release') ? 'RELEASE' : 'SNAPSHOT'
+String candidate = "$System.env.BRANCH_NAME".contentEquals('feature/future') ? 'RELEASE' : 'SNAPSHOT'
 
 allprojects {
     apply plugin: 'com.jfrog.artifactory'
